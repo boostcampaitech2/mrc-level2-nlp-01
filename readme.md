@@ -13,7 +13,7 @@ P stage 3 대회를 위한 베이스라인 코드
 tar -xzf data.tar.gz
 
 # 필요한 파이썬 패키지 설치. 
-bash ./install/install_requirements.sh
+pip install -r requirements.txt
 ```
 
 ## 파일 구성
