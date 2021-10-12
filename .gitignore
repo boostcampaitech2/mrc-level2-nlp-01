@@ -140,3 +140,4 @@ cython_debug/
 # Custom
 models
 nohup.out
+outputs
