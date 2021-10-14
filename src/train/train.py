@@ -2,13 +2,12 @@ import logging
 import os
 import sys
 
-from typing import List, Callable, NoReturn, NewType, Any
-import dataclasses
-from datasets import load_metric, load_from_disk, Dataset, DatasetDict
-
-from transformers import AutoConfig, AutoModelForQuestionAnswering, AutoTokenizer
-
+from typing import NoReturn
+from datasets import load_metric, load_from_disk, DatasetDict
 from transformers import (
+    AutoConfig,
+    AutoModelForQuestionAnswering,
+    AutoTokenizer,
     DataCollatorWithPadding,
     EvalPrediction,
     HfArgumentParser,
@@ -16,18 +15,10 @@ from transformers import (
     set_seed,
 )
 
-from tokenizers import Tokenizer
-from tokenizers.models import WordPiece
-
-from utils_qa import postprocess_qa_predictions, check_no_error
-from trainer_qa import QuestionAnsweringTrainer
-from retrieval import SparseRetrieval
-
-from arguments import (
-    ModelArguments,
-    DataTrainingArguments,
-)
-
+from ..arguments import ModelArguments, DataTrainingArguments
+from ..utils.utils_qa import postprocess_qa_predictions, check_no_error
+from .trainer_qa import QuestionAnsweringTrainer
+from ..retrieval.retrieval import SparseRetrieval
 
 logger = logging.getLogger(__name__)
 
@@ -141,7 +132,7 @@ def run_mrc(
             stride=data_args.doc_stride,
             return_overflowing_tokens=True,
             return_offsets_mapping=True,
-            #return_token_type_ids=False, # roberta모델을 사용할 경우 False, bert를 사용할 경우 True로 표기해야합니다.
+            # return_token_type_ids=False, # roberta모델을 사용할 경우 False, bert를 사용할 경우 True로 표기해야합니다.
             padding="max_length" if data_args.pad_to_max_length else False,
         )
 
@@ -233,7 +224,7 @@ def run_mrc(
             stride=data_args.doc_stride,
             return_overflowing_tokens=True,
             return_offsets_mapping=True,
-            #return_token_type_ids=False, # roberta모델을 사용할 경우 False, bert를 사용할 경우 True로 표기해야합니다.
+            # return_token_type_ids=False, # roberta모델을 사용할 경우 False, bert를 사용할 경우 True로 표기해야합니다.
             padding="max_length" if data_args.pad_to_max_length else False,
         )
 
@@ -311,7 +302,7 @@ def run_mrc(
         return metric.compute(predictions=p.predictions, references=p.label_ids)
 
     # Trainer 초기화
-    trainer = QuestionAnsweringTrainer( 
+    trainer = QuestionAnsweringTrainer(
         model=model,
         args=training_args,
         train_dataset=train_dataset if training_args.do_train else None,

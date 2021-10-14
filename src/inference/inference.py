@@ -7,10 +7,9 @@ Open-Domain Question Answering 을 수행하는 inference 코드 입니다.
 
 import logging
 import sys
-from typing import Callable, List, Dict, NoReturn, Tuple
-
 import numpy as np
 
+from typing import Callable, List, Dict, NoReturn, Tuple
 from datasets import (
     load_metric,
     load_from_disk,
@@ -20,10 +19,10 @@ from datasets import (
     Dataset,
     DatasetDict,
 )
-
-from transformers import AutoConfig, AutoModelForQuestionAnswering, AutoTokenizer
-
 from transformers import (
+    AutoConfig,
+    AutoModelForQuestionAnswering,
+    AutoTokenizer,
     DataCollatorWithPadding,
     EvalPrediction,
     HfArgumentParser,
@@ -31,14 +30,10 @@ from transformers import (
     set_seed,
 )
 
-from utils_qa import postprocess_qa_predictions, check_no_error
-from trainer_qa import QuestionAnsweringTrainer
-from retrieval import SparseRetrieval
-
-from arguments import (
-    ModelArguments,
-    DataTrainingArguments,
-)
+from ..utils.utils_qa import postprocess_qa_predictions, check_no_error
+from ..train.trainer_qa import QuestionAnsweringTrainer
+from ..retrieval.retrieval import SparseRetrieval
+from ..arguments import ModelArguments, DataTrainingArguments
 
 
 logger = logging.getLogger(__name__)
@@ -198,7 +193,7 @@ def run_mrc(
             stride=data_args.doc_stride,
             return_overflowing_tokens=True,
             return_offsets_mapping=True,
-            #return_token_type_ids=False, # roberta모델을 사용할 경우 False, bert를 사용할 경우 True로 표기해야합니다.
+            # return_token_type_ids=False, # roberta모델을 사용할 경우 False, bert를 사용할 경우 True로 표기해야합니다.
             padding="max_length" if data_args.pad_to_max_length else False,
         )
 
