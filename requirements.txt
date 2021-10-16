@@ -8,3 +8,4 @@ faiss-gpu==1.7.1
 torch==1.9.1
 black==21.9b0
 hydra-core==1.1.1
+wandb==0.12.4
