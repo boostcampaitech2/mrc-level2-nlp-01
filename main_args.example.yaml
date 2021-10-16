@@ -1,10 +1,11 @@
 name: "Hello, World"
+mode: "train"
 model:
   name: "klue/bert-base"
   config_name: ${model.name} # model.name을 사용합니다.
   tokenizer_name: ${model.name}
-train:
-  dataset_name: "../data/train_dataset"
+data:
+  dataset_name: "/opt/ml/data/train_dataset"
   overwrite_cache: False
   preprocessing_num_workers: 4
   max_seq_length: 384

@@ -1,0 +1,5 @@
+[default]
+entity = rnl
+project = mrc
+base_url = https://api.wandb.ai
+

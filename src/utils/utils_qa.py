@@ -31,7 +31,8 @@ from transformers import is_torch_available, PreTrainedTokenizerFast, TrainingAr
 from transformers.trainer_utils import get_last_checkpoint
 
 from datasets import DatasetDict
-from arguments import DataTrainingArguments
+
+from src.dto.arguments import DataTrainingArguments
 
 
 logger = logging.getLogger(__name__)
