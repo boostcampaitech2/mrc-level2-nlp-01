@@ -95,7 +95,6 @@ def train(project_args, model_args, dataset_args, train_args):
         trainer.save_metrics("eval", metrics)
 
 
-# 아직 안써용
 def set_training_args(output_dir, log_dir, train_args, name):
     # https://huggingface.co/transformers/main_classes/trainer.html#trainingarguments 참고해주세요.
     return TrainingArguments(
