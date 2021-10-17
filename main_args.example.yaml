@@ -1,36 +1,31 @@
-name: "Hello, World"
-mode: "train"
+mode: "model_train"
+project:
+  name: "Test_Project"
+  base_path: "/home/ubuntu/workspace/mrc-level2-nlp-01/models"
 model:
-  name: "klue/bert-base"
-  config_name: ${model.name} # model.name을 사용합니다.
-  tokenizer_name: ${model.name}
+  name: "monologg/koelectra-small-v3-finetuned-korquad" # https://huggingface.co/models?sort=downloads&search=korquad
 data:
-  dataset_name: "/opt/ml/data/train_dataset"
-  overwrite_cache: False
-  preprocessing_num_workers: 4
-  max_seq_length: 384
-  pad_to_max_length: False
-  doc_stride: 128
-  max_answer_length: 30
-  eval_retrieval: True
-  num_clusters: 64
-  top_k_retrieval: 1
-  use_faiss: False
+  dataset_path: "/home/ubuntu/workspace/data/train_dataset"
+  max_length: 512 # 대부분의 pretrained 모델이 이 값을 사용합니다.
+  stride: 128
+  max_answer_length: 96 # 트레인셋에서 제일 긴 답이 83임
 train:
   log: "logs" # 저장할 폴더
   output: "results" # 저장할 폴더
+  do_train: True
+  do_eval: True
   batch_size: 64
-  learning_rate: 1e-4
+  learning_rate: 5e-5
   weight_decay: 0.01
-  num_train_epochs: 1
+  num_train_epochs: 20
   warmup_steps: 500
   fp16: True # 최신 NVIDIA 그래픽카드 기술 적용
   dataloader_pin_memory: True # default = True
-  gradient_accumulation_steps: 4 # default = 1
+  gradient_accumulation_steps: 1 # default = 1
   seed: 42
   save_total_limit: 3
   save_steps: 500
   logging_steps: 100
   eval_steps: 500
   evaluation_strategy: "steps"
-  disable_tqdm: True # tqdm (상태바) 숨기기
+  disable_tqdm: False # tqdm (상태바) 숨기기
