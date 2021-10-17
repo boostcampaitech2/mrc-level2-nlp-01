@@ -16,3 +16,21 @@ data:
   num_clusters: 64
   top_k_retrieval: 1
   use_faiss: False
+train:
+  log: "logs" # 저장할 폴더
+  output: "results" # 저장할 폴더
+  batch_size: 64
+  learning_rate: 1e-4
+  weight_decay: 0.01
+  num_train_epochs: 1
+  warmup_steps: 500
+  fp16: True # 최신 NVIDIA 그래픽카드 기술 적용
+  dataloader_pin_memory: True # default = True
+  gradient_accumulation_steps: 4 # default = 1
+  seed: 42
+  save_total_limit: 3
+  save_steps: 500
+  logging_steps: 100
+  eval_steps: 500
+  evaluation_strategy: "steps"
+  disable_tqdm: True # tqdm (상태바) 숨기기

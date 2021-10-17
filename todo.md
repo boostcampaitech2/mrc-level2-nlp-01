@@ -1,0 +1,3 @@
+- TrainArgument 설정하기
+- model은 출력값으로 start_logits과 end_logits을 생성함. 확인결과 각각 (2, 368) 의 크기를 가짐
+- utils_qa에서 post_ 이해하지말기(개어려움)
