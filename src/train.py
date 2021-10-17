@@ -7,6 +7,7 @@ from transformers import (
     AutoModelForQuestionAnswering,
     TrainingArguments,
     DataCollatorWithPadding,
+    RobertaForQuestionAnswering,
 )
 from datasets import load_from_disk
 
@@ -35,14 +36,15 @@ def train(project_args, model_args, dataset_args, train_args):
 
     # 토크나이징 진행
 
+    is_roberta = isinstance(model, RobertaForQuestionAnswering)
     tokenized_train_datasets = datasets["train"].map(
-        prepare_train_features_with_setting(tokenizer, dataset_args),
+        prepare_train_features_with_setting(tokenizer, dataset_args, is_roberta),
         batched=True,
         remove_columns=datasets["train"].column_names,
     )
 
     tokenized_valid_datasets = datasets["validation"].map(
-        prepare_validation_features_with_setting(tokenizer, dataset_args),
+        prepare_validation_features_with_setting(tokenizer, dataset_args, is_roberta),
         batched=True,
         remove_columns=datasets["validation"].column_names,
     )

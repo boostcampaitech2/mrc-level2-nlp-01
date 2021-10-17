@@ -1,4 +1,4 @@
-def prepare_train_features_with_setting(tokenizer, dataset_args):
+def prepare_train_features_with_setting(tokenizer, dataset_args, is_roberta):
     def prepare_train_features(examples):
         # Some of the questions have lots of whitespace on the left, which is not useful and will make the
         # truncation of the context fail (the tokenized question will take a lots of space). So we remove that
@@ -18,6 +18,7 @@ def prepare_train_features_with_setting(tokenizer, dataset_args):
             return_overflowing_tokens=True,
             return_offsets_mapping=True,
             padding="max_length",
+            return_token_type_ids=False if is_roberta else True,
         )
 
         # Since one example might give us several features if it has a long context, we need a map from a feature to
@@ -86,7 +87,7 @@ def prepare_train_features_with_setting(tokenizer, dataset_args):
     return prepare_train_features
 
 
-def prepare_validation_features_with_setting(tokenizer, dataset_args):
+def prepare_validation_features_with_setting(tokenizer, dataset_args, is_roberta):
     def prepare_validation_features(examples):
         # Some of the questions have lots of whitespace on the left, which is not useful and will make the
         # truncation of the context fail (the tokenized question will take a lots of space). So we remove that
@@ -106,6 +107,7 @@ def prepare_validation_features_with_setting(tokenizer, dataset_args):
             return_overflowing_tokens=True,
             return_offsets_mapping=True,
             padding="max_length",
+            return_token_type_ids=False if is_roberta else True,
         )
 
         # Since one example might give us several features if it has a long context, we need a map from a feature to
