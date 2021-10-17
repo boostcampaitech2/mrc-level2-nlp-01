@@ -120,7 +120,7 @@ def set_training_args(output_dir, log_dir, train_args, name):
         eval_steps=train_args.eval_steps,  # evaluation step.
         load_best_model_at_end=True,
         seed=train_args.seed,
-        metric_for_best_model="exact_match",
+        metric_for_best_model=train_args.metric,
         greater_is_better=True,
         disable_tqdm=train_args.disable_tqdm,
         # wandb 저장
