@@ -119,7 +119,7 @@ def set_training_args(output_dir, log_dir, train_args, name):
         # `steps`: Evaluate every `eval_steps`.
         # `epoch`: Evaluate every end of epoch.
         eval_steps=train_args.eval_steps,  # evaluation step.
-        load_best_model_at_end=True,
+        load_best_model_at_end=train_args.load_best_model_at_end,
         seed=train_args.seed,
         metric_for_best_model=train_args.metric,
         greater_is_better=True,
