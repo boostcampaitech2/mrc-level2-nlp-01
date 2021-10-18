@@ -1,4 +1,9 @@
 - ~~TrainArgument 설정하기~~
+- ~~retrival 만들기~~
+- 토크나이저 구분
+    - 의존명사는 빼도된다.
+    - 고유명사는 높은 점수를 주자. 일반명사(사람 등)도 조금의 점수를 넣자.
+    - 동사는 okt만 정규화를 지원해주므로 동사만 okt를 쓰고 나머지는 다른 태그를 쓰자
 - model은 출력값으로 start_logits과 end_logits을 생성함. 확인결과 각각 (2, 368) 의 크기를 가짐
 - inference 를 transformers 의 pipeline을 이용해 생성하기
 - main_args.example 문서 보고 기본값으로 바꿔놓기
