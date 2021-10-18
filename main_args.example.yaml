@@ -1,4 +1,4 @@
-mode: "model_train"
+mode: "model_train" # "model_train", "hyperparameter_tune"
 project:
   name: "Test_Project"
   base_path: "/home/ubuntu/workspace/mrc-level2-nlp-01/models"
@@ -28,5 +28,6 @@ train:
   save_steps: 500
   logging_steps: 100
   eval_steps: 500
+  load_best_model_at_end: False
   evaluation_strategy: "steps"
   disable_tqdm: False # tqdm (상태바) 숨기기
