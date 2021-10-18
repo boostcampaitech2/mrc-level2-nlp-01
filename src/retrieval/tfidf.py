@@ -9,7 +9,6 @@ class TfIdfRetrieval:
 
         """
         데이터를 불러오고 토크나이즈 작업을 해준다.
-        __init__는 시간이 별로 안걸리지만, 사용시 get_sparse_embedding()을 실행한 후 사용한다.
         """
         with open(data_path, "r") as json_data:
             wiki_data = json.load(json_data)
@@ -23,8 +22,9 @@ class TfIdfRetrieval:
             ngram_range=(1, 2),
             max_features=100000,
         )
+        self.__get_sparse_embedding()
 
-    def get_sparse_embedding(self):
+    def __get_sparse_embedding(self):
 
         """
         주어진 passage를 fit 해준다.
