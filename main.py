@@ -1,6 +1,6 @@
 import hydra
-import wandb
 import copy
+import os
 
 from omegaconf import DictConfig
 
@@ -12,7 +12,8 @@ from src.hp_opt import hp_optimizing
 def main(cfg: DictConfig):
     cfg = copy.deepcopy(cfg)
     print(f"Start {cfg.project.name} !")
-    wandb.init(name=cfg.wandb.name, project=cfg.wandb.project, entity=cfg.wandb.entity)
+    os.environ["WANDB_ENTITY"] = cfg.wandb.entity
+    os.environ["WANDB_PROJECT"] = cfg.wandb.project
     if cfg.mode == "model_train":
         train(cfg.project, cfg.model, cfg.data, cfg.train)
     elif cfg.mode == "hyperparameter_tune":
