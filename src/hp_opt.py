@@ -1,6 +1,7 @@
 import os
+import copy
 
-
+from typing import Dict
 from transformers import (
     AutoTokenizer,
     AutoConfig,
@@ -80,6 +81,7 @@ def hp_optimizing(project_args, model_args, dataset_args, hp_args):
         backend="sigopt",
         n_trials=hp_args.n_trials,
         hp_space=closure_hp_space_sigopt(hp_args),
+        compute_objective=EM_compute_objective,
     )
 
 
@@ -93,7 +95,12 @@ def set_training_args(output_dir, log_dir):
         metric_for_best_model="exact_match",
         greater_is_better=True,
         disable_tqdm=True,
+        report_to="wandb",
     )
+
+
+def EM_compute_objective(metrics: Dict[str, float]) -> float:
+    return metrics["eval_exact_match"]
 
 
 def closure_hp_space_sigopt(hp_args):
