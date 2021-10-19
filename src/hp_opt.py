@@ -92,6 +92,7 @@ def set_training_args(output_dir, log_dir):
         logging_dir=log_dir,
         evaluation_strategy="epoch",  # evaluation strategy to adopt during training
         fp16=True,
+        save_strategy="no",
         metric_for_best_model="exact_match",
         greater_is_better=True,
         disable_tqdm=True,
