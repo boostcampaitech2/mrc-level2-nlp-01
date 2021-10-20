@@ -17,3 +17,4 @@ hp:
   log: "logs" # 저장할 폴더
   output: "results" # 저장할 폴더
   n_trials: 20
+  eval_type: "exact_match" # "exact_match" or "f1"
