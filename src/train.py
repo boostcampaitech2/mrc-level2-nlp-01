@@ -49,7 +49,7 @@ def train(project_args, model_args, dataset_args, train_args):
         remove_columns=datasets["validation"].column_names,
     )
 
-    # 데이터 콜레터 진행 (이거 뭐하는지 아시는분?)
+    # 데이터 콜레터 진행
     data_collator = DataCollatorWithPadding(
         tokenizer, pad_to_multiple_of=8 if train_args.fp16 else None
     )
