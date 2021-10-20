@@ -81,6 +81,9 @@ def train(project_args, model_args, dataset_args, train_args):
     # Training
     if training_args.do_train:
         trainer.train()
+        tokenizer.save_pretrained(
+            os.path.join(project_args.base_path, project_args.name, "best_model")
+        )
         model.save_pretrained(
             os.path.join(project_args.base_path, project_args.name, "best_model")
         )
