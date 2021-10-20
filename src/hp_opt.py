@@ -81,7 +81,7 @@ def hp_optimizing(project_args, model_args, dataset_args, hp_args):
         backend="sigopt",
         n_trials=hp_args.n_trials,
         hp_space=closure_hp_space_sigopt(hp_args),
-        compute_objective=EM_compute_objective,
+        compute_objective=EM_F1_selector_with_compute_objective(hp_args.eval_type),
     )
 
 
@@ -96,12 +96,19 @@ def set_training_args(output_dir, log_dir):
         metric_for_best_model="exact_match",
         greater_is_better=True,
         disable_tqdm=True,
-        report_to="wandb",
     )
 
 
-def EM_compute_objective(metrics: Dict[str, float]) -> float:
-    return metrics["eval_exact_match"]
+def EM_F1_selector_with_compute_objective(eval_type):
+    if eval_type == "exact_match":
+        eval_type = "eval_exact_match"
+    elif eval_type == "f1":
+        eval_type = "eval_f1"
+
+    def EM_compute_objective(metrics: Dict[str, float]) -> float:
+        return metrics[eval_type]
+
+    return EM_compute_objective
 
 
 def closure_hp_space_sigopt(hp_args):
@@ -113,7 +120,11 @@ def closure_hp_space_sigopt(hp_args):
                 "type": "double",
                 "transformamtion": "log",
             },
-            {"bounds": {"min": 5, "max": 8}, "name": "num_train_epochs", "type": "int"},
+            {
+                "bounds": {"min": 6, "max": 18},
+                "name": "num_train_epochs",
+                "type": "int",
+            },
             {"bounds": {"min": 1, "max": 50}, "name": "seed", "type": "int"},
             {
                 "bounds": {"min": 1e-4, "max": 5e-1},
@@ -127,7 +138,7 @@ def closure_hp_space_sigopt(hp_args):
                 "type": "int",
             },
             {
-                "bounds": {"min": 1, "max": 40},
+                "bounds": {"min": 1, "max": 80},
                 "name": "gradient_accumulation",
                 "type": "int",
             },
