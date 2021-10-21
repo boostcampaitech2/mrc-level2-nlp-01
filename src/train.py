@@ -127,4 +127,6 @@ def set_training_args(output_dir, log_dir, train_args, name):
         metric_for_best_model=train_args.metric,
         greater_is_better=True,
         disable_tqdm=train_args.disable_tqdm,
+        report_to="wandb",
+        run_name=name,
     )
