@@ -1,5 +1,4 @@
 import os
-import copy
 
 from typing import Dict
 from transformers import (
