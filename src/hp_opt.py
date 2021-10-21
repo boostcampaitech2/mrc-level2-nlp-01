@@ -56,7 +56,7 @@ def hp_optimizing(project_args, model_args, dataset_args, hp_args):
     # 트레이닝 옵션 설정
     output_dir = os.path.join(project_args.base_path, project_args.name, hp_args.output)
     log_dir = os.path.join(project_args.base_path, project_args.name, hp_args.log)
-    training_args = set_training_args(output_dir, log_dir)
+    training_args = set_training_args(output_dir, log_dir, hp_args)
 
     def model_init():
         return AutoModelForQuestionAnswering.from_pretrained(model_name, config=config)
@@ -85,14 +85,15 @@ def hp_optimizing(project_args, model_args, dataset_args, hp_args):
     )
 
 
-def set_training_args(output_dir, log_dir):
+def set_training_args(output_dir, log_dir, hp_args):
     # https://huggingface.co/transformers/main_classes/trainer.html#trainingarguments 참고해주세요.
     return TrainingArguments(
         output_dir=output_dir,  # output directory
         logging_dir=log_dir,
         evaluation_strategy="epoch",  # evaluation strategy to adopt during training
         fp16=True,
-        save_strategy="no",
+        save_strategy=hp_args.save_strategy,
+        save_total_limit=hp_args.save_total_limit,
         metric_for_best_model="exact_match",
         greater_is_better=True,
         disable_tqdm=True,
