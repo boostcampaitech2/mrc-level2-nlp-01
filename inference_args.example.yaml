@@ -5,8 +5,8 @@ wandb:
   entity: rnl
 model:
   base_path: "/opt/ml/code/models"
-  best_model_dir: "best_model"
   project_name: "Test_Project"
+  best_model_dir: "best_model"
 data:
   dataset_path: "/opt/ml/data/test_dataset"
   max_length: 512 # 대부분의 pretrained 모델이 이 값을 사용합니다.
