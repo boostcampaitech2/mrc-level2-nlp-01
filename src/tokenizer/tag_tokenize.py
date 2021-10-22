@@ -26,10 +26,8 @@ class KonlpyTokenize:
             return tokenized_list
         noum_tokenize = self.noun_collector.pos(context)
         for word, tag in noum_tokenize:
-            if tag == "NNG":
+            if tag == "NNG" or tag == "NNP":
                 tokenized_list.append(word)
-            elif tag == "NNP":
-                tokenized_list.extend([word] * 2)
         return tokenized_list
 
     def tokenize_fn(self, context):
