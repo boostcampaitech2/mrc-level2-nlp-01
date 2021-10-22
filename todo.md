@@ -1,5 +1,5 @@
 - [x] TrainArgument 설정하기
-- [ ] retrival 만들기
+- [x] retrival 만들기
 - [x] 토크나이저 구분
     - 의존명사는 빼도된다.
     - 고유명사는 높은 점수를 주자. 일반명사(사람 등)도 조금의 점수를 넣자.
@@ -14,5 +14,8 @@
 - [x] ray 하이퍼파라미터는 hydra, src로 경로설정을 지원안함, 그리고 train dir를 절대경로로 해야하는듯
 - [x] 하이퍼파라미터 폴더 생성 안하도록 설정, wandb에 프로젝트 이름 /home/sds같이 안나오게 설정!
 - [x] 하이퍼파라미터 리턴타입은 transformers.trainer_utils.BestRun 이다. 그리고 아웃오브메모리 안뜨도록 배치사이즈 설정잘해두자
-- [ ] inference 구현하기
+- [x] inference 구현하기
 - [ ] inference 설정마다 다른 retrieval 을 가져오도록 수정하기
+- [ ] 기본 argument를 가져오도록 설정 => class를 만들어야 할듯
+- [ ] args파일을 네개 만들고 python main.py --train 등으로 사용하도록 설정
+- [ ] haystack 문서 읽어보기
