@@ -1,5 +1,3 @@
-import logging
-import sys
 import os
 from typing import Callable, List, Dict, NoReturn, Tuple
 
@@ -20,22 +18,21 @@ from transformers import AutoConfig, AutoModelForQuestionAnswering, AutoTokenize
 from transformers import (
     DataCollatorWithPadding,
     EvalPrediction,
-    HfArgumentParser,
     TrainingArguments,
-    set_seed,
 )
 
 from src.magic_box.utils_qa import postprocess_qa_predictions, check_no_error
 from src.magic_box.train_qa import QuestionAnsweringTrainer
-from src.retrieval import SparseRetrieval
+from src.tokenizer.tag_tokenize import KonlpyTokenize
+from src.retrieval.bm25_retrieval_base import BM25SparseRetrieval
 
 
 def inference(model_args, data_args):
     # 가능한 arguments 들은 ./arguments.py 나 transformer package 안의 src/transformers/training_args.py 에서 확인 가능합니다.
     # --help flag 를 실행시켜서 확인할 수 도 있습니다.
 
-    training_args = TrainingArguments()
-    training_args.do_train = True
+    training_args = TrainingArguments(output_dir=data_args.output_dir)
+    training_args.do_predict = True
 
     datasets = load_from_disk(data_args.dataset_path)
     print(datasets)
@@ -52,18 +49,16 @@ def inference(model_args, data_args):
         config=config,
     )
 
-    # True일 경우 : run passage retrieval
-    if data_args.eval_retrieval:
-        datasets = run_sparse_retrieval(
-            tokenizer.tokenize,
-            datasets,
-            training_args,
-            data_args,
-        )
+    tokenize_fn = KonlpyTokenize().tokenize_fn
 
-    # eval or predict mrc model
-    if training_args.do_eval or training_args.do_predict:
-        run_mrc(data_args, training_args, model_args, datasets, tokenizer, model)
+    datasets = run_sparse_retrieval(
+        tokenize_fn,
+        datasets,
+        training_args,
+        data_args,
+    )
+
+    run_mrc(data_args, training_args, model_args, datasets, tokenizer, model)
 
 
 def run_sparse_retrieval(
@@ -71,15 +66,16 @@ def run_sparse_retrieval(
     datasets: DatasetDict,
     training_args: TrainingArguments,
     data_args,
-    data_path: str = "../data",
     context_path: str = "wikipedia_documents.json",
 ) -> DatasetDict:
 
     # Query에 맞는 Passage들을 Retrieval 합니다.
-    retriever = SparseRetrieval(
-        tokenize_fn=tokenize_fn, data_path=data_path, context_path=context_path
+    retriever = BM25SparseRetrieval(
+        tokenize_fn=tokenize_fn,
+        data_path=data_args.wiki_path,
+        context_path=context_path,
     )
-    retriever.get_sparse_embedding()
+    retriever.get_sparse_embedding(data_args.pickle)
 
     if data_args.use_faiss:
         retriever.build_faiss(num_clusters=data_args.num_clusters)

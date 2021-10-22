@@ -1,14 +1,24 @@
-mode: "model_train" # "model_train", "hyperparameter_tune"
+mode: "inference"
 wandb:
   name: None
   project: mrc
   entity: rnl
+project:
+  name: "inference"
 model:
   base_path: "/opt/ml/code/models"
   project_name: "Test_Project"
   best_model_dir: "best_model"
 data:
+  wiki_path: "/opt/ml/data"
   dataset_path: "/opt/ml/data/test_dataset"
-  max_length: 512 # 대부분의 pretrained 모델이 이 값을 사용합니다.
-  stride: 128
+  max_seq_length: 512
+  preprocessing_num_workers: 1
+  doc_stride: 128
   max_answer_length: 96 # 트레인셋에서 제일 긴 답이 83임
+  output_dir: "/opt/ml/code/outputs/test_dataset/"
+  top_k_retrieval: 3
+  overwrite_cache: False
+  pad_to_max_length: True
+  use_faiss: False
+  pickle: 'bm25api.bin'
