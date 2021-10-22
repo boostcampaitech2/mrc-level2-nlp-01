@@ -6,6 +6,7 @@ from omegaconf import DictConfig
 
 from src.train import train
 from src.hp_opt import hp_optimizing
+from src.inference import inference
 
 
 @hydra.main(config_path=".", config_name="main_args")
@@ -20,8 +21,8 @@ def main(cfg: DictConfig):
         hp_optimizing(cfg.project, cfg.model, cfg.data, cfg.hp)
     elif cfg.mode == "retrieval_train":
         print("dense retrieval train 만들기")
-    elif cfg.mode == "validation":
-        print("평가데이터 만들기")
+    elif cfg.mode == "inference":
+        inference(cfg.model, cfg.data)
 
 
 if __name__ == "__main__":
