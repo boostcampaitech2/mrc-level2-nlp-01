@@ -128,6 +128,7 @@ def closure_hp_space_sigopt(hp_args):
                 "name": "num_train_epochs",
                 "type": "int",
             },
+            {"bounds": {"min": 1, "max": 50}, "name": "seed", "type": "int"},
             {
                 "bounds": {"min": 1e-4, "max": 5e-1},
                 "name": "weight_decay",
