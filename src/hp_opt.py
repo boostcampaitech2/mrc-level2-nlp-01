@@ -18,7 +18,7 @@ from src.magic_box.preprocess import (
 )
 from src.magic_box.postprocess import post_processing_function_with_args
 from src.magic_box.train_qa import QuestionAnsweringTrainer
-from src.magic_box.utils_qa import EM_F1_compute_metrics
+from src.magic_box.utils_qa import EM_F1_compute_metrics, set_seed
 
 
 def hp_optimizing(project_args, model_args, dataset_args, hp_args):
@@ -33,6 +33,9 @@ def hp_optimizing(project_args, model_args, dataset_args, hp_args):
     # 데이터 셋 로드
 
     datasets = load_from_disk(dataset_args.dataset_path)
+
+    # 시드 설정
+    set_seed(42)
 
     # 토크나이징 진행
 
@@ -121,11 +124,10 @@ def closure_hp_space_sigopt(hp_args):
                 "transformamtion": "log",
             },
             {
-                "bounds": {"min": 6, "max": 18},
+                "bounds": {"min": 6, "max": 10},
                 "name": "num_train_epochs",
                 "type": "int",
             },
-            {"bounds": {"min": 1, "max": 50}, "name": "seed", "type": "int"},
             {
                 "bounds": {"min": 1e-4, "max": 5e-1},
                 "name": "weight_decay",
