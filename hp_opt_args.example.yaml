@@ -9,7 +9,7 @@ project:
 model:
   name: "monologg/koelectra-small-v3-finetuned-korquad" # https://huggingface.co/models?sort=downloads&search=korquad
 data:
-  dataset_path: "/opt/ml/data/data/train_dataset"
+  dataset_path: "/opt/ml/data/train_dataset"
   max_length: 512 # 대부분의 pretrained 모델이 이 값을 사용합니다.
   stride: 128
   max_answer_length: 32 # 트레인셋에서 제일 긴 답이 83임
@@ -18,5 +18,5 @@ hp:
   output: "results" # 저장할 폴더
   n_trials: 20
   eval_type: "exact_match" # "exact_match" or "f1"
-  save_strategy: 'steps' # 저장안할경우 no
+  save_strategy: "steps" # 저장안할경우 no
   save_total_limit: 2
