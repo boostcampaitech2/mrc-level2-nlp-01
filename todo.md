@@ -1,31 +1,22 @@
-- ~~TrainArgument 설정하기~~
-- ~~retrival 만들기~~
-- ~~토크나이저 구분~~
+- [x] TrainArgument 설정하기
+- [x] retrival 만들기
+- [x] 토크나이저 구분
     - 의존명사는 빼도된다.
     - 고유명사는 높은 점수를 주자. 일반명사(사람 등)도 조금의 점수를 넣자.
     - 동사는 okt만 정규화를 지원해주므로 동사만 okt를 쓰고 나머지는 다른 태그를 쓰자
-- model은 출력값으로 start_logits과 end_logits을 생성함. 확인결과 각각 (2, 368) 의 크기를 가짐
-- T5 를 이용한 summarize 를 만들자!
-- inference 를 transformers 의 pipeline을 이용해 생성하기
-- main_args.example 문서 보고 기본값으로 바꿔놓기
-- wandb 프로젝트 단위로 팀 설정하는 방법 찾기
-- retrieval 트레인 만들기
-- 데이터 어그멘테이션 방법론 생각하기
-- ray 하이퍼파라미터는 hydra, src로 경로설정을 지원안함, 그리고 train dir를 절대경로로 해야하는듯
-- 하이퍼파라미터 폴더 생성 안하도록 설정, wandb에 프로젝트 이름 /home/sds같이 안나오게 설정!
-- 하이퍼파라미터 리턴타입은 transformers.trainer_utils.BestRun 이다. 그리고 아웃오브메모리 안뜨도록 배치사이즈 설정잘해두자
-- hp_space는 이거 참고
-```
-def default_hp_space_ray(trial) -> Dict[str, float]:
-    from .integrations import is_ray_tune_available
-
-    assert is_ray_tune_available(), "This function needs ray installed: `pip " "install ray[tune]`"
-    from ray import tune
-
-    return {
-        "learning_rate": tune.loguniform(1e-6, 1e-4),
-        "num_train_epochs": tune.choice(list(range(1, 6))),
-        "seed": tune.uniform(1, 40),
-        "per_device_train_batch_size": tune.choice([4, 8, 16, 32, 64]),
-    }
-```
+- [x] model은 출력값으로 start_logits과 end_logits을 생성함. 확인결과 각각 (2, 368) 의 크기를 가짐
+- [x] T5 를 이용한 summarize 를 만들자! => 진행중
+- [x] ~~inference 를 transformers 의 pipeline을 이용해 생성하기~~ => 취소됨
+- [ ] main_args.example 문서 보고 기본값으로 바꿔놓기
+- [x] wandb 프로젝트 단위로 팀 설정하는 방법 찾기
+- [ ] retrieval 트레인 만들기
+- [ ] 데이터 어그멘테이션 방법론 생각하기
+- [x] ray 하이퍼파라미터는 hydra, src로 경로설정을 지원안함, 그리고 train dir를 절대경로로 해야하는듯
+- [x] 하이퍼파라미터 폴더 생성 안하도록 설정, wandb에 프로젝트 이름 /home/sds같이 안나오게 설정!
+- [x] 하이퍼파라미터 리턴타입은 transformers.trainer_utils.BestRun 이다. 그리고 아웃오브메모리 안뜨도록 배치사이즈 설정잘해두자
+- [x] inference 구현하기
+- [ ] 처음 시드는 고정하고 트레인전용 시드만 바꾸는건 어떨까?
+- [ ] inference 설정마다 다른 retrieval 을 가져오도록 수정하기
+- [ ] 기본 argument를 가져오도록 설정 => class를 만들어야 할듯
+- [ ] args파일을 네개 만들고 python main.py --train 등으로 사용하도록 설정
+- [ ] haystack 문서 읽어보기

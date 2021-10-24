@@ -18,7 +18,7 @@ from src.magic_box.preprocess import (
 )
 from src.magic_box.postprocess import post_processing_function_with_args
 from src.magic_box.train_qa import QuestionAnsweringTrainer
-from src.magic_box.utils_qa import EM_F1_compute_metrics
+from src.magic_box.utils_qa import EM_F1_compute_metrics, set_seed
 
 
 def train(project_args, model_args, dataset_args, train_args):
@@ -29,6 +29,9 @@ def train(project_args, model_args, dataset_args, train_args):
     config = AutoConfig.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForQuestionAnswering.from_pretrained(model_name, config=config)
+
+    # 시드 설정
+    set_seed(train_args.seed)
 
     # 데이터 셋 로드
 
@@ -127,4 +130,6 @@ def set_training_args(output_dir, log_dir, train_args, name):
         metric_for_best_model=train_args.metric,
         greater_is_better=True,
         disable_tqdm=train_args.disable_tqdm,
+        report_to="wandb",
+        run_name=name,
     )

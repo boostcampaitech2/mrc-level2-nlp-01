@@ -14,6 +14,12 @@ pip install -r requirements.txt
 
 # konlpy 패키지 설치
 sudo apt-get install g++ openjdk-8-jdk python3-dev python3-pip curl
+
+# wandb 설정
+wandb login
+
+# sigopt 설정
+sigopt config
 ```
 
 ## 사용방법
