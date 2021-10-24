@@ -15,6 +15,7 @@
 - [x] 하이퍼파라미터 폴더 생성 안하도록 설정, wandb에 프로젝트 이름 /home/sds같이 안나오게 설정!
 - [x] 하이퍼파라미터 리턴타입은 transformers.trainer_utils.BestRun 이다. 그리고 아웃오브메모리 안뜨도록 배치사이즈 설정잘해두자
 - [x] inference 구현하기
+- [ ] 처음 시드는 고정하고 트레인전용 시드만 바꾸는건 어떨까?
 - [ ] inference 설정마다 다른 retrieval 을 가져오도록 수정하기
 - [ ] 기본 argument를 가져오도록 설정 => class를 만들어야 할듯
 - [ ] args파일을 네개 만들고 python main.py --train 등으로 사용하도록 설정
