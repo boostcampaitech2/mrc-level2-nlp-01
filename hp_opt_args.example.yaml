@@ -7,9 +7,9 @@ project:
   name: "Test_Project"
   base_path: "/opt/ml/code/hptunes"
 model:
-  name: "monologg/koelectra-small-v3-finetuned-korquad" # https://huggingface.co/models?sort=downloads&search=korquad
+  name_or_path: "monologg/koelectra-small-v3-finetuned-korquad" # Require
 data:
-  dataset_path: "/opt/ml/data/train_dataset"
+  dataset_path: "/opt/ml/data/train_dataset" # Require
   max_length: 512 # 대부분의 pretrained 모델이 이 값을 사용합니다.
   stride: 128
   max_answer_length: 32 # 트레인셋에서 제일 긴 답이 83임
