@@ -25,4 +25,4 @@ sigopt config
 ## 사용방법
 
 - configs 폴더 안에 원하는 설정파일을 만든다. (ex. hp_tuning.yaml)
-- python main.py --config hp_tuning
+- python main.py --config-name hp_tuning
