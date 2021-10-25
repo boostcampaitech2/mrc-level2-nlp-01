@@ -24,5 +24,5 @@ sigopt config
 
 ## 사용방법
 
-- main_args.yaml을 만든다.
-- 훈련시킨다
+- configs 폴더 안에 원하는 설정파일을 만든다. (ex. hp_tuning.yaml)
+- python main.py --config hp_tuning
