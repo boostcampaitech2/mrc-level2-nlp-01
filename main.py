@@ -11,7 +11,6 @@ from src.inference import inference
 
 
 def main(cf_name):
-    
     @hydra.main(config_path="configs", config_name=cf_name)
     def inner_main(cfg: DictConfig):
         cfg = copy.deepcopy(cfg)
@@ -26,12 +25,15 @@ def main(cf_name):
             print("dense retrieval train 만들기")
         elif cfg.mode == "inference":
             inference(cfg.model, cfg.data)
-    
+
     return inner_main()
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', type=str, default='main_args', help='설정 yaml 파일을 입력해주세요.')
-    cf_name = parser.parse_args().config
+    parser.add_argument(
+        "--config-name", type=str, default="main_args", help="설정 yaml 파일을 입력해주세요."
+    )
+    print(parser.parse_args())
+    cf_name = parser.parse_args().config_name
     main(cf_name)
