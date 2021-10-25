@@ -12,23 +12,31 @@ from transformers import (
 from datasets import load_from_disk
 
 
+from src.arguments import ProjectArguments, ModelArguments, DataArguments
 from src.magic_box.preprocess import (
     prepare_train_features_with_setting,
     prepare_validation_features_with_setting,
 )
 from src.magic_box.postprocess import post_processing_function_with_args
 from src.magic_box.train_qa import QuestionAnsweringTrainer
-from src.magic_box.utils_qa import EM_F1_compute_metrics
+from src.magic_box.utils_qa import EM_F1_compute_metrics, set_seed
 
 
 def train(project_args, model_args, dataset_args, train_args):
-    model_name = model_args.name
+    # 기본 변수 설정
+    project_args = ProjectArguments(**project_args)
+    model_args = ModelArguments(**model_args)
+    dataset_args = DataArguments(**dataset_args)
 
     # 모델 및 토크나이저 로드
-
+    model_name = model_args.name_or_path
+    
     config = AutoConfig.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForQuestionAnswering.from_pretrained(model_name, config=config)
+
+    # 시드 설정
+    set_seed(42)
 
     # 데이터 셋 로드
 
@@ -49,18 +57,18 @@ def train(project_args, model_args, dataset_args, train_args):
         remove_columns=datasets["validation"].column_names,
     )
 
-    # 데이터 콜레터 진행 (이거 뭐하는지 아시는분?)
+    # 데이터 콜레터 진행
     data_collator = DataCollatorWithPadding(
         tokenizer, pad_to_multiple_of=8 if train_args.fp16 else None
     )
 
     # 트레이닝 옵션 설정
-    output_dir = os.path.join(
-        project_args.base_path, project_args.name, train_args.output
+    train_args.output_dir = os.path.join(
+        project_args.base_path, project_args.name, train_args.output_dir
     )
-    log_dir = os.path.join(project_args.base_path, project_args.name, train_args.log)
+    train_args.logging_dir = os.path.join(project_args.base_path, project_args.name, train_args.logging_dir)
     training_args = set_training_args(
-        output_dir, log_dir, train_args, project_args.name
+        train_args, project_args.name
     )
 
     # Trainer 초기화
@@ -81,6 +89,9 @@ def train(project_args, model_args, dataset_args, train_args):
     # Training
     if training_args.do_train:
         trainer.train()
+        tokenizer.save_pretrained(
+            os.path.join(project_args.base_path, project_args.name, "best_model")
+        )
         model.save_pretrained(
             os.path.join(project_args.base_path, project_args.name, "best_model")
         )
@@ -95,33 +106,13 @@ def train(project_args, model_args, dataset_args, train_args):
         trainer.save_metrics("eval", metrics)
 
 
-def set_training_args(output_dir, log_dir, train_args, name):
+def set_training_args(train_args, name):
     # https://huggingface.co/transformers/main_classes/trainer.html#trainingarguments 참고해주세요.
     return TrainingArguments(
-        output_dir=output_dir,  # output directory
-        logging_dir=log_dir,
-        do_train=train_args.do_train,
-        do_eval=train_args.do_eval,
-        save_total_limit=train_args.save_total_limit,  # number of total save model.
-        save_steps=train_args.save_steps,  # model saving step.
-        num_train_epochs=train_args.num_train_epochs,  # total number of training epochs
-        learning_rate=train_args.learning_rate,  # learning_rate
-        per_device_train_batch_size=train_args.batch_size,  # batch size per device during training
-        per_device_eval_batch_size=train_args.batch_size,  # batch size for evaluation
-        warmup_steps=train_args.warmup_steps,  # number of warmup steps for learning rate scheduler
-        weight_decay=train_args.weight_decay,  # strength of weight decay
-        logging_steps=train_args.logging_steps,  # log saving step.
-        evaluation_strategy=train_args.evaluation_strategy,  # evaluation strategy to adopt during training
-        fp16=train_args.fp16,
-        dataloader_pin_memory=train_args.dataloader_pin_memory,
-        gradient_accumulation_steps=train_args.gradient_accumulation_steps,
-        # `no`: No evaluation during training.
-        # `steps`: Evaluate every `eval_steps`.
-        # `epoch`: Evaluate every end of epoch.
-        eval_steps=train_args.eval_steps,  # evaluation step.
-        load_best_model_at_end=train_args.load_best_model_at_end,
-        seed=train_args.seed,
-        metric_for_best_model=train_args.metric,
+        do_train=True,
+        do_eval=True,
+        report_to="wandb",
+        run_name=name,
         greater_is_better=True,
-        disable_tqdm=train_args.disable_tqdm,
+        **train_args
     )

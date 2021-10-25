@@ -59,7 +59,7 @@ def set_seed(seed: int = 42):
 
 
 def postprocess_qa_predictions(
-    examples,
+    examples,  # eval_example을 준다
     features,
     predictions: Tuple[np.ndarray, np.ndarray],
     version_2_with_negative: bool = False,
@@ -114,7 +114,9 @@ def postprocess_qa_predictions(
     example_id_to_index = {k: i for i, k in enumerate(examples["id"])}
     features_per_example = collections.defaultdict(list)
     for i, feature in enumerate(features):
-        features_per_example[example_id_to_index[feature["example_id"]]].append(i)
+        features_per_example[example_id_to_index[feature["example_id"]]].append(
+            i
+        )  # 여기서 같은 문서별로 묶는구나
 
     # prediction, nbest에 해당하는 OrderedDict 생성합니다.
     all_predictions = collections.OrderedDict()

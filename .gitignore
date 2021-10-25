@@ -141,7 +141,7 @@ cython_debug/
 models
 nohup.out
 outputs
-main_args.yaml
-main_args2.yaml
+configs
 ignore_folder
 hptunes
+inference
