@@ -12,6 +12,7 @@ from transformers import (
 from datasets import load_from_disk
 
 
+from src.arguments import ProjectArguments, ModelArguments, DataArguments
 from src.magic_box.preprocess import (
     prepare_train_features_with_setting,
     prepare_validation_features_with_setting,
@@ -22,9 +23,13 @@ from src.magic_box.utils_qa import EM_F1_compute_metrics, set_seed
 
 
 def hp_optimizing(project_args, model_args, dataset_args, hp_args):
-    model_name = model_args.name
+    # 기본 변수 설정
+    project_args = ProjectArguments(**project_args)
+    model_args = ModelArguments(**model_args)
+    dataset_args = DataArguments(**dataset_args)
 
     # 모델 및 토크나이저 로드
+    model_name = model_args.name_or_path
 
     config = AutoConfig.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -33,9 +38,6 @@ def hp_optimizing(project_args, model_args, dataset_args, hp_args):
     # 데이터 셋 로드
 
     datasets = load_from_disk(dataset_args.dataset_path)
-
-    # 시드 설정
-    set_seed(42)
 
     # 토크나이징 진행
 
@@ -52,7 +54,7 @@ def hp_optimizing(project_args, model_args, dataset_args, hp_args):
         remove_columns=datasets["validation"].column_names,
     )
 
-    # 데이터 콜레터 진행 (이거 뭐하는지 아시는분?)
+    # 데이터 콜레터 진행
     data_collator = DataCollatorWithPadding(tokenizer, pad_to_multiple_of=8)
 
     # 트레이닝 옵션 설정
@@ -61,6 +63,7 @@ def hp_optimizing(project_args, model_args, dataset_args, hp_args):
     training_args = set_training_args(output_dir, log_dir, hp_args)
 
     def model_init():
+        set_seed(42)
         return AutoModelForQuestionAnswering.from_pretrained(model_name, config=config)
 
     # Trainer 초기화
