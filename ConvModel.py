@@ -8,7 +8,7 @@ from transformers import  BertForQuestionAnswering, RobertaForQuestionAnswering,
 
 class ConvModel(RobertaForQuestionAnswering):
     def __init__(self, model_config):
-        super().__init__() 
+        super().__init__(model_config) 
         
         self.roberta = RobertaModel(config=model_config)
         self.conv1d_layer1 = nn.Conv1d(model_config.hidden_size, 1024, kernel_size=1)
