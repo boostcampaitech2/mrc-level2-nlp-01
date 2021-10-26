@@ -7,6 +7,7 @@ apt update
 apt install elasticsearch
 
 cp -f ./install/elasticsearch.yml /etc/elasticsearch/elasticsearch.yml
+cp -f ./install/stop_words.txt /etc/elasticsearch/stop_words.txt
 apt install systemd
 service elasticsearch start
 systemctl enable elasticsearch
