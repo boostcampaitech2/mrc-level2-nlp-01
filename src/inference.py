@@ -26,6 +26,8 @@ from src.magic_box.train_qa import QuestionAnsweringTrainer
 from src.tokenizer.tag_tokenize import KonlpyTokenize
 from src.retrieval.bm25_retrieval_base import BM25SparseRetrieval
 
+from ConvModel import ConvModel
+from LstmModel import LstmModel
 
 def inference(model_args, data_args):
     # 가능한 arguments 들은 ./arguments.py 나 transformer package 안의 src/transformers/training_args.py 에서 확인 가능합니다.
@@ -47,7 +49,17 @@ def inference(model_args, data_args):
     model = AutoModelForQuestionAnswering.from_pretrained(
         model_path,
         config=config,
-    )
+    )  # 일반 모델 돌릴때
+    
+    # model = LstmModel.from_pretrained(
+    #     model_path,
+    #     config=config,
+    # ) # lstm 돌릴때 주석 풀기
+    
+    # model = ConvModel.from_pretrained(
+    #     model_path,
+    #     config=config,
+    # ) # conv 돌릴 때 주석 풀기
 
     tokenize_fn = KonlpyTokenize().tokenize_fn
 
