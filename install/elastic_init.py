@@ -1,6 +1,4 @@
 import json
-import elasticsearch as es
-import elasticsearch.helpers
 
 from elasticsearch import Elasticsearch
 from datasets import Dataset
@@ -25,6 +23,7 @@ for key in wiki_keys:
   data['context'].append(wiki_data[key]['text'])
 
 wiki_datasets = Dataset.from_dict(data)
+wiki_datasets.save_to_disk("/opt/ml/data/wiki_datasets")
 
 es_client = Elasticsearch([{"host": "localhost", "port": "9200"}])  # default client
 es_config = {
@@ -57,4 +56,3 @@ es_config = {
 
 es_index_name = "wikipedia_contexts"  # name of the index in ElasticSearch
 wiki_datasets.add_elasticsearch_index("context", es_client=es_client, es_index_config=es_config, es_index_name=es_index_name)
-wiki_datasets.save_to_disk("/opt/ml/data/wiki_datasets")
