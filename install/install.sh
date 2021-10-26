@@ -10,6 +10,7 @@ cp -f ./install/elasticsearch.yml /etc/elasticsearch/elasticsearch.yml
 apt install systemd
 service elasticsearch start
 systemctl enable elasticsearch
+/usr/share/elasticsearch/bin/elasticsearch-plugin install analysis-nori
 
 pip install elasticsearch
 python ./install/elastic_init.py
