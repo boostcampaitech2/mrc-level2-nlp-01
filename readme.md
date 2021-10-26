@@ -24,5 +24,11 @@ sigopt config
 
 ## 사용방법
 
+### 훈련방법
+
 - configs 폴더 안에 원하는 설정파일을 만든다. (ex. hp_tuning.yaml)
 - python main.py --config-name hp_tuning
+
+### 엘라스틱 서치 사용
+- python install/install.sh
+- install/elasticsearch_load.ipynb처럼 사용하면 된다.
