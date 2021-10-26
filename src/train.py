@@ -21,6 +21,8 @@ from src.magic_box.postprocess import post_processing_function_with_args
 from src.magic_box.train_qa import QuestionAnsweringTrainer
 from src.magic_box.utils_qa import EM_F1_compute_metrics, set_seed
 
+from LstmModel import LstmModel
+from ConvModel import ConvModel
 
 def train(project_args, model_args, dataset_args, train_args):
     # 기본 변수 설정
@@ -35,7 +37,7 @@ def train(project_args, model_args, dataset_args, train_args):
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForQuestionAnswering.from_pretrained(model_name, config=config)
     # model = LstmModel.from_pretrained(model_name) # roberta + lstm 때 주석 풀고 사용 (위, 아래 model은 주석)
-    # model = ConvModel(model_name, config, "bert") # roberta + conv 때 주석 풀고 사용 (위 model들은 주석)
+    # model = ConvModel.from_pretrained(model_name) # roberta + conv 때 주석 풀고 사용 (위 model들은 주석)
     
 
     # 시드 설정
