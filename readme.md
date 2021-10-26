@@ -30,5 +30,5 @@ sigopt config
 - python main.py --config-name hp_tuning
 
 ### 엘라스틱 서치 사용
-- python install/install.sh
+- sh install/install.sh
 - install/elasticsearch_load.ipynb처럼 사용하면 된다.
