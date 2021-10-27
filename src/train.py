@@ -8,9 +8,9 @@ from transformers import (
     TrainingArguments,
     DataCollatorWithPadding,
     RobertaForQuestionAnswering,
+    EarlyStoppingCallback
 )
 from datasets import load_from_disk
-
 
 from src.arguments import ProjectArguments, ModelArguments, DataArguments
 from src.magic_box.preprocess import (
@@ -22,7 +22,7 @@ from src.magic_box.train_qa import QuestionAnsweringTrainer
 from src.magic_box.utils_qa import EM_F1_compute_metrics, set_seed
 
 
-def train(project_args, model_args, dataset_args, train_args):
+def train(project_args, model_args, dataset_args, train_args, early_stopping_args):
     # 기본 변수 설정
     project_args = ProjectArguments(**project_args)
     model_args = ModelArguments(**model_args)
@@ -61,7 +61,8 @@ def train(project_args, model_args, dataset_args, train_args):
     data_collator = DataCollatorWithPadding(
         tokenizer, pad_to_multiple_of=8 if train_args.fp16 else None
     )
-
+    if early_stopping_args.setting:
+        train_args.load_best_model_at_end = True
     # 트레이닝 옵션 설정
     train_args.output_dir = os.path.join(
         project_args.base_path, project_args.name, train_args.output_dir
@@ -72,7 +73,8 @@ def train(project_args, model_args, dataset_args, train_args):
     )
 
     # Trainer 초기화
-    trainer = QuestionAnsweringTrainer(
+    if early_stopping_args.setting:
+        trainer = QuestionAnsweringTrainer(
         model=model,
         args=training_args,
         train_dataset=tokenized_train_datasets if training_args.do_train else None,
@@ -84,7 +86,22 @@ def train(project_args, model_args, dataset_args, train_args):
             dataset_args.max_answer_length, datasets["validation"]
         ),
         compute_metrics=EM_F1_compute_metrics(),
+        callbacks = [EarlyStoppingCallback(early_stopping_args.patience)],
     )
+    else:
+        trainer = QuestionAnsweringTrainer(
+            model=model,
+            args=training_args,
+            train_dataset=tokenized_train_datasets if training_args.do_train else None,
+            eval_dataset=tokenized_valid_datasets if training_args.do_eval else None,
+            eval_examples=datasets["validation"] if training_args.do_eval else None,
+            tokenizer=tokenizer,
+            data_collator=data_collator,
+            post_process_function=post_processing_function_with_args(
+                dataset_args.max_answer_length, datasets["validation"]
+            ),
+            compute_metrics=EM_F1_compute_metrics(),
+        )
 
     # Training
     if training_args.do_train:

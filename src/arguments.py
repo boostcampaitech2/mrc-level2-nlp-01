@@ -53,3 +53,18 @@ class DataArguments:
             "help": "정답 토큰 최대길이"
         },
     )
+
+@dataclass
+class EarlyStoppingArguments:
+    setting: bool = field(
+        default=True,
+        metadata={
+            "help": "Path to pretrained model or model identifier from huggingface.co/models"
+        },
+    )
+    patience: int = field(
+        default=5,
+        metadata={
+            "help": "Path to pretrained model or model identifier from huggingface.co/models"
+        },
+    )

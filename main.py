@@ -18,7 +18,7 @@ def main(cf_name):
         os.environ["WANDB_ENTITY"] = cfg.wandb.entity
         os.environ["WANDB_PROJECT"] = cfg.wandb.project
         if cfg.mode == "model_train":
-            train(cfg.project, cfg.model, cfg.data, cfg.train)
+            train(cfg.project, cfg.model, cfg.data, cfg.train, cfg.early_stopping)
         elif cfg.mode == "hyperparameter_tune":
             hp_optimizing(cfg.project, cfg.model, cfg.data, cfg.hp)
         elif cfg.mode == "retrieval_train":
