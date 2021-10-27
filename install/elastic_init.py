@@ -1,24 +1,14 @@
-import json
-
 from elasticsearch import Elasticsearch
 from datasets import Dataset
+import pandas as pd
+from datasets import load_from_disk, DatasetDict
 
-with open("/opt/ml/data/wikipedia_documents.json", "r", encoding="UTF-8") as json_data:
-    wiki_data = json.load(json_data)
-wiki_keys = wiki_data.keys()
-wiki_texts = []
+wekipedia = pd.read_json("/opt/ml/data/wikipedia_documents.json")
+wekipedia = wekipedia.T
+wekipedia = wekipedia.loc[:, ['document_id', 'title', 'text']]
+wekipedia.drop_duplicates('text', inplace=True)
 
-for key in wiki_keys:
-    wiki_texts.append(wiki_data[key]["text"])
-
-data = {"document_id": [], "title": [], "context": []}
-
-for key in wiki_keys:
-    data["document_id"].append(wiki_data[key]["document_id"])
-    data["title"].append(wiki_data[key]["title"])
-    data["context"].append(wiki_data[key]["text"])
-
-wiki_datasets = Dataset.from_dict(data)
+wiki_datasets = Dataset.from_pandas(wekipedia)
 wiki_datasets.save_to_disk("/opt/ml/data/wiki_datasets")
 
 es_client = Elasticsearch([{"host": "localhost", "port": "9200"}])  # default client
@@ -50,10 +40,9 @@ es_config = {
     },
 }  # default config
 
-
 es_index_name = "wikipedia_contexts"  # name of the index in ElasticSearch
 wiki_datasets.add_elasticsearch_index(
-    "context",
+    "text",
     es_client=es_client,
     es_index_config=es_config,
     es_index_name=es_index_name,
