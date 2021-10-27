@@ -53,3 +53,21 @@ class DataArguments:
             "help": "정답 토큰 최대길이"
         },
     )
+
+@dataclass
+class EarlyStoppingArguments:
+    """
+    Arguments for Early-Stopping
+    """
+    setting: bool = field(
+        default=False,
+        metadata={
+            "help": "Whether to use early-stopping or not"
+        },
+    )
+    patience: int = field(
+        default=5,
+        metadata={
+            "help": "Patience for early-stopping"
+        },
+    )
