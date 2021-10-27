@@ -13,5 +13,6 @@ service elasticsearch start
 systemctl enable elasticsearch
 /usr/share/elasticsearch/bin/elasticsearch-plugin install analysis-nori
 
+curl -XDELETE localhost:9200/wikipedia_contexts
 pip install elasticsearch
 python ./install/elastic_init.py

@@ -27,7 +27,7 @@ es_config = {
                     "type": "custom",
                     "tokenizer": "nori_tokenizer",
                     "decompound_mode": "mixed",
-                    "filter": ["stop_word_filter"],
+                    #   "filter": ["stop_word_filter"],
                 }
             },
         },

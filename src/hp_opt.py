@@ -23,6 +23,9 @@ from src.magic_box.utils_qa import EM_F1_compute_metrics, set_seed
 
 
 def hp_optimizing(project_args, model_args, dataset_args, hp_args):
+    # wandb disable
+    os.environ["WANDB_DISABLED"] = "true"
+
     # 기본 변수 설정
     project_args = ProjectArguments(**project_args)
     model_args = ModelArguments(**model_args)
