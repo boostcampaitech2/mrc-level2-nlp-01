@@ -14,7 +14,7 @@ data:
   stride: 128
   max_answer_length: 96 # 트레인셋에서 제일 긴 답이 83임
 early_stopping:
-  setting: True
+  setting: False
   patience: 5
 train:
   logging_dir: "logs" # Require
