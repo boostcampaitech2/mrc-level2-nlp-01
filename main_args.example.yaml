@@ -8,6 +8,7 @@ project:
   base_path: "/opt/ml/code/models"
 model:
   name_or_path: "monologg/koelectra-small-v3-finetuned-korquad" # Require
+  seq2seq: False
 data:
   dataset_path: "/opt/ml/data/train_dataset" # Require
   max_length: 512 # 대부분의 pretrained 모델이 이 값을 사용합니다.

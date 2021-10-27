@@ -37,6 +37,7 @@ from transformers import (
 from transformers.trainer_utils import get_last_checkpoint
 from datasets import DatasetDict, load_metric
 
+import nltk
 
 logger = logging.getLogger(__name__)
 
@@ -371,5 +372,47 @@ def EM_F1_compute_metrics():
     def compute_metrics(p: EvalPrediction):
         result = metric.compute(predictions=p.predictions, references=p.label_ids)
         return {"eval_exact_match": result["exact_match"], "eval_f1": result["f1"]}
+
+    return compute_metrics
+
+
+def postprocess_text_for_seq2seq(preds, labels):
+    """
+    postprocess는 nltk를 이용합니다.
+    Huggingface의 TemplateProcessing을 사용하여
+    정규표현식 기반으로 postprocess를 진행할 수 있지만
+    해당 미션에서는 nltk를 이용하여 간단한 후처리를 진행합니다
+    """
+
+    preds = [pred.strip() for pred in preds]
+    labels = [label.strip() for label in labels]
+        
+    preds = ["\n".join(nltk.sent_tokenize(pred)) for pred in preds]
+    labels = ["\n".join(nltk.sent_tokenize(label)) for label in labels]
+
+    return preds, labels
+
+def compute_metrics_for_seq2seq(tokenizer):
+    metric = load_metric("squad")
+
+    def compute_metrics(eval_preds):
+        print("Compute Metrics")
+        preds, labels = eval_preds
+        if isinstance(preds, tuple):
+            preds = preds[0]
+        
+        decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
+        # decoded_labels은 rouge metric을 위한 것이며, f1/em을 구할 때 사용되지 않음
+        decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
+
+        # 간단한 post-processing
+        decoded_preds, decoded_labels = postprocess_text_for_seq2seq(decoded_preds, decoded_labels)
+        print(decoded_preds, decoded_labels)
+        formatted_predictions = [{"id": i, "prediction_text": decoded_preds[i]} for i in range(len(decoded_preds))]
+        references = [{"id": i, "answers": decoded_labels[i]} for i in range(len(decoded_labels))]
+        
+        result = metric.compute(predictions=formatted_predictions, references=references)
+        print(result)
+        return result
 
     return compute_metrics

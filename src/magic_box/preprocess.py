@@ -136,3 +136,61 @@ def prepare_validation_features_with_setting(tokenizer, dataset_args, is_roberta
         return tokenized_examples
 
     return prepare_validation_features
+
+
+def prepare_train_features_with_setting_for_seq2seq(tokenizer, data_args):
+    def prepare_train_features(examples):
+        inputs = [
+            f"질문: {q}  지문: {c} </s>"
+            for q, c in zip(examples["question"], examples["context"])
+        ]
+        targets = [f'{a["text"][0]} </s>' for a in examples["answers"]]
+        model_inputs = tokenizer(
+            inputs, max_length=1024, padding=False, truncation=True
+        )
+
+        # targets(label)을 위해 tokenizer 설정
+        with tokenizer.as_target_tokenizer():
+            labels = tokenizer(
+                targets,
+                max_length=data_args.max_answer_length,
+                padding=False,
+                truncation=True,
+            )
+
+        model_inputs["labels"] = labels["input_ids"]
+        model_inputs["example_id"] = []
+        for i in range(len(model_inputs["labels"])):
+            model_inputs["example_id"].append(examples["id"][i])
+        return model_inputs
+
+    return prepare_train_features
+
+
+def prepare_validation_features_with_setting_for_seq2seq(tokenizer, data_args):
+    def prepare_validation_features(examples):
+        inputs = [
+            f"질문: {q}  지문: {c} </s>"
+            for q, c in zip(examples["question"], examples["context"])
+        ]
+        targets = [f'{a["text"][0]} </s>' for a in examples["answers"]]
+        model_inputs = tokenizer(
+            inputs, max_length=1024, padding=False, truncation=True
+        )
+
+        # targets(label)을 위해 tokenizer 설정
+        with tokenizer.as_target_tokenizer():
+            labels = tokenizer(
+                targets,
+                max_length=data_args.max_answer_length,
+                padding=False,
+                truncation=True,
+            )
+
+        model_inputs["labels"] = labels["input_ids"]
+        model_inputs["example_id"] = []
+        for i in range(len(model_inputs["labels"])):
+            model_inputs["example_id"].append(examples["id"][i])
+        return model_inputs
+
+    return prepare_validation_features

@@ -26,6 +26,12 @@ class ModelArguments:
             "help": "Path to pretrained model or model identifier from huggingface.co/models"
         },
     )
+    seq2seq: bool = field(
+        default=False,
+        metadata={
+            "help": "Whether the model is seq2seq or not"
+        }
+    )
     
 @dataclass
 class DataArguments:
