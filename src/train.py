@@ -85,7 +85,7 @@ def train(project_args, model_args, dataset_args, train_args, early_stopping_arg
             dataset_args.max_answer_length, datasets["validation"]
         ),
         compute_metrics=EM_F1_compute_metrics(),
-        callbacks = [EarlyStoppingCallback(early_stopping_args.patience) if early_stopping_args.setting else None],
+        callbacks = [EarlyStoppingCallback(early_stopping_args.patience)] if early_stopping_args.setting else None,
     )
 
     # Training
