@@ -1,0 +1,4 @@
+mode: elastic_search
+elastic_search:
+  top_k: 5
+  data_path: '/opt/ml/data/test_dataset'
