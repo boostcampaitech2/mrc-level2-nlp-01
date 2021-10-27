@@ -56,15 +56,18 @@ class DataArguments:
 
 @dataclass
 class EarlyStoppingArguments:
+    """
+    Arguments for Early-Stopping
+    """
     setting: bool = field(
-        default=True,
+        default=False,
         metadata={
-            "help": "Path to pretrained model or model identifier from huggingface.co/models"
+            "help": "Whether to use early-stopping or not"
         },
     )
     patience: int = field(
         default=5,
         metadata={
-            "help": "Path to pretrained model or model identifier from huggingface.co/models"
+            "help": "Patience for early-stopping"
         },
     )

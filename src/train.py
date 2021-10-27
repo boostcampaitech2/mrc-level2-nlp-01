@@ -73,8 +73,7 @@ def train(project_args, model_args, dataset_args, train_args, early_stopping_arg
     )
 
     # Trainer 초기화
-    if early_stopping_args.setting:
-        trainer = QuestionAnsweringTrainer(
+    trainer = QuestionAnsweringTrainer(
         model=model,
         args=training_args,
         train_dataset=tokenized_train_datasets if training_args.do_train else None,
@@ -86,22 +85,8 @@ def train(project_args, model_args, dataset_args, train_args, early_stopping_arg
             dataset_args.max_answer_length, datasets["validation"]
         ),
         compute_metrics=EM_F1_compute_metrics(),
-        callbacks = [EarlyStoppingCallback(early_stopping_args.patience)],
+        callbacks = [EarlyStoppingCallback(early_stopping_args.patience) if early_stopping_args.setting else None],
     )
-    else:
-        trainer = QuestionAnsweringTrainer(
-            model=model,
-            args=training_args,
-            train_dataset=tokenized_train_datasets if training_args.do_train else None,
-            eval_dataset=tokenized_valid_datasets if training_args.do_eval else None,
-            eval_examples=datasets["validation"] if training_args.do_eval else None,
-            tokenizer=tokenizer,
-            data_collator=data_collator,
-            post_process_function=post_processing_function_with_args(
-                dataset_args.max_answer_length, datasets["validation"]
-            ),
-            compute_metrics=EM_F1_compute_metrics(),
-        )
 
     # Training
     if training_args.do_train:
