@@ -33,3 +33,6 @@ sigopt config
 ### 엘라스틱 서치 사용
 - sh install/install.sh
 - install/elasticsearch_load.ipynb처럼 사용하면 된다.
+
+- configs 폴더 안에 원하는 설정파일을 만든다. (ex. elasticsearch.yaml)
+- python main.py --config-name elasticsearch
