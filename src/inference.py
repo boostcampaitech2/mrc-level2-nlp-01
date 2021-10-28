@@ -3,6 +3,7 @@ import os
 import errno
 
 
+from collections import OrderedDict
 from tqdm import tqdm
 from transformers import (
     AutoTokenizer,
@@ -35,8 +36,8 @@ def inference(model_args, dataset_args, inf_args):
         "question-answering", model=model, tokenizer=tokenizer, device=0
     )
 
-    predictions = {}
-    n_predictions = {}
+    predictions = OrderedDict()
+    n_predictions = OrderedDict()
 
     for data in tqdm(datasets):
         prediction = ""
@@ -68,8 +69,8 @@ def inference(model_args, dataset_args, inf_args):
     with open(
         os.path.join(inf_args.output_dir, "predictions.json"), "w", encoding="utf-8"
     ) as outfile:
-        json.dump(predictions, outfile)
+        outfile.write(json.dumps(predictions, indent=4, ensure_ascii=False) + "\n")
     with open(
         os.path.join(inf_args.output_dir, "n_predictions.json"), "w", encoding="utf-8"
     ) as outfile:
-        json.dump(n_predictions, outfile)
+        outfile.write(json.dumps(n_predictions, indent=4, ensure_ascii=False) + "\n")
