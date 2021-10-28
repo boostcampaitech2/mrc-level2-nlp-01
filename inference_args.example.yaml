@@ -9,5 +9,4 @@ data:
   doc_stride: 128
   max_answer_length: 32
 inference:
-  topk: 10
   output_dir: "/opt/ml/code/inference/sample"
