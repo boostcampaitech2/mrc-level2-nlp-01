@@ -91,6 +91,7 @@ def hp_optimizing(project_args, model_args, dataset_args, hp_args):
         hp_space=closure_hp_space_sigopt(hp_args),
         compute_objective=EM_F1_selector_with_compute_objective(hp_args.eval_type),
     )
+    trainer.save_model()
 
 
 def set_training_args(output_dir, log_dir, hp_args):
@@ -105,6 +106,7 @@ def set_training_args(output_dir, log_dir, hp_args):
         metric_for_best_model="exact_match",
         greater_is_better=True,
         disable_tqdm=True,
+        load_best_model_at_end=hp_args.load_best_model_at_end,
     )
 
 

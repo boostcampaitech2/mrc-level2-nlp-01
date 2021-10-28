@@ -18,5 +18,6 @@ hp:
   output: "results" # 저장할 폴더
   n_trials: 20
   eval_type: "exact_match" # "exact_match" or "f1"
-  save_strategy: "steps" # 저장안할경우 no
-  save_total_limit: 2
+  save_strategy: "no" # 저장 할경우 "epoch"
+  save_total_limit: 1
+  load_best_model_at_end: False
