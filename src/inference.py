@@ -38,10 +38,8 @@ def inference(model_args, dataset_args, inf_args):
     predictions = {}
     n_predictions = {}
     result_list = []
-    i = 0
 
     for data in tqdm(datasets):
-        i += 1
         prediction = ""
         n_prediction = []
         for context in data["context"]:
@@ -57,8 +55,6 @@ def inference(model_args, dataset_args, inf_args):
                 result = [result]
             result_list.append(result)
             n_prediction.extend(result)
-        if i > 3:
-            break
         n_prediction.sort(key=lambda x: x["score"], reverse=True)
         n_prediction = n_prediction[: inf_args.topk]
         prediction = n_prediction[0]["answer"]
