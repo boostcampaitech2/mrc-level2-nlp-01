@@ -12,6 +12,7 @@ apt install systemd
 service elasticsearch start
 systemctl enable elasticsearch
 /usr/share/elasticsearch/bin/elasticsearch-plugin install analysis-nori
+systemctl restart elasticsearch
 
 curl -XDELETE localhost:9200/wikipedia_contexts
 pip install elasticsearch
