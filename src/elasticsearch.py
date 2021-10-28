@@ -1,4 +1,4 @@
-from datasets import Dataset, load_from_disk
+from datasets import Dataset, DatasetDict, load_from_disk
 
 
 def initializeES(es_cfg):
@@ -19,7 +19,7 @@ def initializeES(es_cfg):
         scores, context = wiki_datasets.get_nearest_examples(
             "text", test_valid["question"][idx], k=es_cfg.top_k
         )
-        context_list.append(context["text"])
+        context_list.append(" ".join(context["text"]))
         scores_list.append(scores)
 
     # 데이터프레임 형태로 불러온 문서와 유사도 점수 컬럼 추가
@@ -27,4 +27,6 @@ def initializeES(es_cfg):
     test_pd["context"] = context_list
     test_pd["score"] = scores_list
     test_valid = Dataset.from_pandas(test_pd)
-    test_valid.save_to_disk(f"/opt/ml/data/retrival_test_{es_cfg.top_k}")
+
+    test_dataset = DatasetDict({"validation": test_valid})
+    test_dataset.save_to_disk(f"/opt/ml/data/retrival_test_{es_cfg.top_k}")
