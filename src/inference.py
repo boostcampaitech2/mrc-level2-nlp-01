@@ -1,15 +1,10 @@
-import os
-from typing import Callable, List, Dict, NoReturn, Tuple
+from typing import Dict, NoReturn, Tuple
 
 import numpy as np
 
 from datasets import (
     load_metric,
     load_from_disk,
-    Sequence,
-    Value,
-    Features,
-    Dataset,
     DatasetDict,
 )
 
