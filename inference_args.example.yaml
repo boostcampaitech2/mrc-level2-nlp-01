@@ -5,9 +5,8 @@ model:
   name_or_path: "/opt/ml/code/models"
 data:
   dataset_path: "/opt/ml/data/retrival_test_10"
-  max_length: 512
-  stride: 128
+  max_seq_length: 512
+  doc_stride: 128
   max_answer_length: 32
 inference:
-  topk: 10
   output_dir: "/opt/ml/code/inference/sample"

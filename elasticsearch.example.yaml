@@ -3,4 +3,5 @@ project:
   name: "elastic_search making"
 elastic_search:
   top_k: 10
-  data_path: "/opt/ml/data/test_dataset"
+  root: "/opt/ml/data/"
+  data_path: "test_dataset"

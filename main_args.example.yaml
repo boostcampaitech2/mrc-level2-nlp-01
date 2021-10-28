@@ -10,8 +10,8 @@ model:
   name_or_path: "monologg/koelectra-small-v3-finetuned-korquad" # Require
 data:
   dataset_path: "/opt/ml/data/train_dataset" # Require
-  max_length: 512 # 대부분의 pretrained 모델이 이 값을 사용합니다.
-  stride: 128
+  max_seq_length: 512 # 대부분의 pretrained 모델이 이 값을 사용합니다.
+  doc_stride: 128
   max_answer_length: 96 # 트레인셋에서 제일 긴 답이 83임
 early_stopping:
   setting: False
@@ -30,10 +30,8 @@ train:
   dataloader_pin_memory: True # default = True
   gradient_accumulation_steps: 1 # default = 1
   seed: 42
+  save_strategy: "epoch"
+  evaluation_strategy: "epoch"
   save_total_limit: 3
-  save_steps: 500
-  logging_steps: 100
-  eval_steps: 500
-  load_best_model_at_end: False
-  evaluation_strategy: "steps"
+  load_best_model_at_end: True
   disable_tqdm: False # tqdm (상태바) 숨기기

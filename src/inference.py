@@ -1,15 +1,10 @@
-import os
-from typing import Callable, List, Dict, NoReturn, Tuple
+from typing import Dict, NoReturn, Tuple
 
 import numpy as np
 
 from datasets import (
     load_metric,
     load_from_disk,
-    Sequence,
-    Value,
-    Features,
-    Dataset,
     DatasetDict,
 )
 
@@ -33,7 +28,7 @@ def inference(model_args, dataset_args, inf_args):
     model_args = ModelArguments(**model_args)
     dataset_args = DataArguments(**dataset_args)
     inf_args = InferenceArguments(**inf_args)
-    training_args = TrainingArguments(output_dir=dataset_args.output_dir)
+    training_args = TrainingArguments(output_dir=inf_args.output_dir)
     training_args.do_predict = True
 
     model_path = model_args.name_or_path
@@ -60,6 +55,7 @@ def run_mrc(
 ) -> NoReturn:
 
     # eval 혹은 prediction에서만 사용함
+    print(type(datasets))
     column_names = datasets["validation"].column_names
 
     question_column_name = "question" if "question" in column_names else column_names[0]

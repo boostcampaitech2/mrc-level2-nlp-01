@@ -10,13 +10,14 @@ model:
   name_or_path: "monologg/koelectra-small-v3-finetuned-korquad" # Require
 data:
   dataset_path: "/opt/ml/data/train_dataset" # Require
-  max_length: 512 # 대부분의 pretrained 모델이 이 값을 사용합니다.
-  stride: 128
+  max_seq_length: 512 # 대부분의 pretrained 모델이 이 값을 사용합니다.
+  doc_stride: 128
   max_answer_length: 32 # 트레인셋에서 제일 긴 답이 83임
 hp:
   log: "logs" # 저장할 폴더
   output: "results" # 저장할 폴더
   n_trials: 20
   eval_type: "exact_match" # "exact_match" or "f1"
-  save_strategy: "steps" # 저장안할경우 no
-  save_total_limit: 2
+  save_strategy: "no" # 저장 할경우 "epoch"
+  save_total_limit: 1
+  load_best_model_at_end: False
