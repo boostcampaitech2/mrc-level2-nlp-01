@@ -37,7 +37,6 @@ def inference(model_args, dataset_args, inf_args):
 
     predictions = {}
     n_predictions = {}
-    result_list = []
 
     for data in tqdm(datasets):
         prediction = ""
@@ -53,7 +52,6 @@ def inference(model_args, dataset_args, inf_args):
             )
             if inf_args.topk == 1:
                 result = [result]
-            result_list.append(result)
             n_prediction.extend(result)
         n_prediction.sort(key=lambda x: x["score"], reverse=True)
         n_prediction = n_prediction[: inf_args.topk]
