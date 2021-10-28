@@ -30,10 +30,8 @@ train:
   dataloader_pin_memory: True # default = True
   gradient_accumulation_steps: 1 # default = 1
   seed: 42
+  save_strategy: "epoch"
+  evaluation_strategy: "epoch"
   save_total_limit: 3
-  save_steps: 500
-  logging_steps: 100
-  eval_steps: 500
-  load_best_model_at_end: False
-  evaluation_strategy: "steps"
+  load_best_model_at_end: True
   disable_tqdm: False # tqdm (상태바) 숨기기

@@ -1,4 +1,5 @@
 import os
+from datasets.utils.file_utils import T
 
 
 from transformers import (
@@ -8,11 +9,16 @@ from transformers import (
     TrainingArguments,
     DataCollatorWithPadding,
     RobertaForQuestionAnswering,
-    EarlyStoppingCallback
+    EarlyStoppingCallback,
 )
 from datasets import load_from_disk
 
-from src.arguments import ProjectArguments, ModelArguments, DataArguments, EarlyStoppingArguments
+from src.arguments import (
+    ProjectArguments,
+    ModelArguments,
+    DataArguments,
+    EarlyStoppingArguments,
+)
 from src.magic_box.preprocess import (
     prepare_train_features_with_setting,
     prepare_validation_features_with_setting,
@@ -31,7 +37,7 @@ def train(project_args, model_args, dataset_args, train_args, early_stopping_arg
 
     # 모델 및 토크나이저 로드
     model_name = model_args.name_or_path
-    
+
     config = AutoConfig.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForQuestionAnswering.from_pretrained(model_name, config=config)
@@ -70,10 +76,10 @@ def train(project_args, model_args, dataset_args, train_args, early_stopping_arg
     train_args.output_dir = os.path.join(
         project_args.base_path, project_args.name, train_args.output_dir
     )
-    train_args.logging_dir = os.path.join(project_args.base_path, project_args.name, train_args.logging_dir)
-    training_args = set_training_args(
-        train_args, project_args.name
+    train_args.logging_dir = os.path.join(
+        project_args.base_path, project_args.name, train_args.logging_dir
     )
+    training_args = set_training_args(train_args, project_args.name)
 
     # Trainer 초기화
     trainer = QuestionAnsweringTrainer(
@@ -88,18 +94,17 @@ def train(project_args, model_args, dataset_args, train_args, early_stopping_arg
             dataset_args.max_answer_length, datasets["validation"]
         ),
         compute_metrics=EM_F1_compute_metrics(),
-        callbacks = [EarlyStoppingCallback(early_stopping_args.patience)] if early_stopping_args.setting else None,
+        callbacks=[EarlyStoppingCallback(early_stopping_args.patience)]
+        if early_stopping_args.setting
+        else None,
     )
 
     # Training
     if training_args.do_train:
         trainer.train()
-        tokenizer.save_pretrained(
-            os.path.join(project_args.base_path, project_args.name, "best_model")
-        )
-        model.save_pretrained(
-            os.path.join(project_args.base_path, project_args.name, "best_model")
-        )
+        trainer.save_model(
+            os.path.join(project_args.base_path, project_args.name, "finish_model")
+        )  # Saves the tokenizer too for easy upload
 
     # Evaluation
     if training_args.do_eval:
