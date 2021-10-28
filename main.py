@@ -27,7 +27,7 @@ def main(cf_name):
         elif cfg.mode == "retrieval_train":
             print("dense retrieval train 만들기")
         elif cfg.mode == "inference":
-            inference(cfg.model, cfg.data)
+            inference(cfg.model, cfg.data, cfg.inference)
 
     return inner_main()
 
