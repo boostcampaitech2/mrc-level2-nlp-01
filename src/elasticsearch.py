@@ -1,15 +1,17 @@
+import os
+
 from datasets import Dataset, DatasetDict, load_from_disk
 
 
 def initializeES(es_cfg):
-    wiki_datasets = load_from_disk("/opt/ml/data/wiki_datasets")
+    wiki_datasets = load_from_disk(os.path.join(es_cfg.root, "wiki_datasets"))
     es_index_name = "wikipedia_contexts"  # name of the index in ElasticSearch
     wiki_datasets.load_elasticsearch_index(
         "text", host="localhost", port="9200", es_index_name=es_index_name
     )
 
     # test 데이터셋 불러오기
-    test_dataset = load_from_disk(es_cfg.data_path)
+    test_dataset = load_from_disk(os.path.join(es_cfg.root, es_cfg.data_path))
     test_valid = test_dataset["validation"]
 
     # top_k개 만큼 문서 검색
@@ -29,4 +31,6 @@ def initializeES(es_cfg):
     test_valid = Dataset.from_pandas(test_pd)
 
     test_dataset = DatasetDict({"validation": test_valid})
-    test_dataset.save_to_disk(f"/opt/ml/data/retrival_test_{es_cfg.top_k}")
+    test_dataset.save_to_disk(
+        os.path.join(es_cfg.root, f"retrival_test_{es_index_name}_{es_cfg.top_k}")
+    )
