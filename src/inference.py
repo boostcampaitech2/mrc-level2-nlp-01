@@ -67,7 +67,11 @@ def inference(model_args, dataset_args, inf_args):
         except OSError as exc:
             if exc.errno != errno.EEXIST:
                 raise
-    with open(os.path.join(inf_args.output_dir, "predictions.json"), "w") as outfile:
+    with open(
+        os.path.join(inf_args.output_dir, "predictions.json"), "w", encoding="utf-8"
+    ) as outfile:
         json.dump(predictions, outfile)
-    with open(os.path.join(inf_args.output_dir, "n_predictions.json"), "w") as outfile:
+    with open(
+        os.path.join(inf_args.output_dir, "n_predictions.json"), "w", encoding="utf-8"
+    ) as outfile:
         json.dump(n_predictions, outfile)
