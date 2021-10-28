@@ -3,6 +3,7 @@ import os
 import errno
 
 
+from collections import OrderedDict
 from tqdm import tqdm
 from transformers import (
     AutoTokenizer,
@@ -35,13 +36,10 @@ def inference(model_args, dataset_args, inf_args):
         "question-answering", model=model, tokenizer=tokenizer, device=0
     )
 
-    predictions = {}
-    n_predictions = {}
-    result_list = []
-    i = 0
+    predictions = OrderedDict()
+    n_predictions = OrderedDict()
 
     for data in tqdm(datasets):
-        i += 1
         prediction = ""
         n_prediction = []
         for context in data["context"]:
@@ -55,10 +53,7 @@ def inference(model_args, dataset_args, inf_args):
             )
             if inf_args.topk == 1:
                 result = [result]
-            result_list.append(result)
             n_prediction.extend(result)
-        if i > 3:
-            break
         n_prediction.sort(key=lambda x: x["score"], reverse=True)
         n_prediction = n_prediction[: inf_args.topk]
         prediction = n_prediction[0]["answer"]
@@ -71,7 +66,11 @@ def inference(model_args, dataset_args, inf_args):
         except OSError as exc:
             if exc.errno != errno.EEXIST:
                 raise
-    with open(os.path.join(inf_args.output_dir, "predictions.json"), "w") as outfile:
-        json.dump(predictions, outfile)
-    with open(os.path.join(inf_args.output_dir, "n_predictions.json"), "w") as outfile:
-        json.dump(n_predictions, outfile)
+    with open(
+        os.path.join(inf_args.output_dir, "predictions.json"), "w", encoding="utf-8"
+    ) as outfile:
+        outfile.write(json.dumps(predictions, indent=4, ensure_ascii=False) + "\n")
+    with open(
+        os.path.join(inf_args.output_dir, "n_predictions.json"), "w", encoding="utf-8"
+    ) as outfile:
+        outfile.write(json.dumps(n_predictions, indent=4, ensure_ascii=False) + "\n")
