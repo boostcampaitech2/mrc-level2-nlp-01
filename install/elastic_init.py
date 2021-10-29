@@ -1,15 +1,7 @@
 from elasticsearch import Elasticsearch
-from datasets import Dataset
-import pandas as pd
-from datasets import load_from_disk, DatasetDict
+from datasets import load_from_disk
 
-wekipedia = pd.read_json("/opt/ml/data/wikipedia_documents.json")
-wekipedia = wekipedia.T
-wekipedia = wekipedia.loc[:, ['document_id', 'title', 'text']]
-wekipedia.drop_duplicates('text', inplace=True)
-
-wiki_datasets = Dataset.from_pandas(wekipedia)
-wiki_datasets.save_to_disk("/opt/ml/data/wiki_datasets")
+wiki_datasets = load_from_disk("/opt/ml/data/wiki_preprocessed_droped")
 
 es_client = Elasticsearch([{"host": "localhost", "port": "9200"}])  # default client
 
