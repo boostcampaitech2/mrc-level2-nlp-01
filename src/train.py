@@ -22,6 +22,10 @@ from src.magic_box.train_qa import QuestionAnsweringTrainer
 from src.magic_box.utils_qa import EM_F1_compute_metrics, set_seed
 
 
+from custom_model import MT5EncoderQuestionAnsweringModel
+
+from transformers import AdamW, get_linear_schedule_with_warmup
+
 def train(project_args, model_args, dataset_args, train_args, early_stopping_args):
     # 기본 변수 설정
     project_args = ProjectArguments(**project_args)
@@ -34,7 +38,7 @@ def train(project_args, model_args, dataset_args, train_args, early_stopping_arg
     
     config = AutoConfig.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForQuestionAnswering.from_pretrained(model_name, config=config)
+    model = MT5EncoderQuestionAnsweringModel(model_name, config)
 
     # 시드 설정
     set_seed(42)
@@ -75,6 +79,11 @@ def train(project_args, model_args, dataset_args, train_args, early_stopping_arg
         train_args, project_args.name
     )
 
+    optimizer = AdamW([
+                        {'params': model.encoder.parameters()},
+                        {'params': model.qa_outputs.parameters(), 'lr': 5e-1}
+                        ], lr=train_args.learning_rate)
+    scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=train_args.warmup_steps, num_training_steps=len(tokenized_train_datasets)/train_args.per_device_train_batch_size*train_args.num_train_epochs)
     # Trainer 초기화
     trainer = QuestionAnsweringTrainer(
         model=model,
@@ -88,7 +97,8 @@ def train(project_args, model_args, dataset_args, train_args, early_stopping_arg
             dataset_args.max_answer_length, datasets["validation"]
         ),
         compute_metrics=EM_F1_compute_metrics(),
-        callbacks = [EarlyStoppingCallback(early_stopping_args.patience)] if early_stopping_args.setting else None,
+        callbacks=[EarlyStoppingCallback(early_stopping_args.patience)] if early_stopping_args.setting else None,
+        optimizers=(optimizer, scheduler)
     )
 
     # Training

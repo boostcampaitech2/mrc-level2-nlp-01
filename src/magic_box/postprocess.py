@@ -3,6 +3,7 @@ from transformers import EvalPrediction
 
 from src.magic_box.utils_qa import postprocess_qa_predictions
 
+import pandas as pd
 
 def post_processing_function_with_args(max_answer_length, valid_datasets):
     def post_processing_function(examples, features, predictions, training_args):
@@ -18,6 +19,10 @@ def post_processing_function_with_args(max_answer_length, valid_datasets):
         formatted_predictions = [
             {"id": k, "prediction_text": v} for k, v in predictions.items()
         ]
+        ids = [k for k, v in predictions.items()]
+        texts = [v for k, v in predictions.items()]
+        save_file = {"id":ids, "prediction_text": texts}
+        save_file = pd.DataFrame(save_file).to_csv("/opt/ml/save_file.csv")
         if training_args.do_predict:
             return formatted_predictions
 

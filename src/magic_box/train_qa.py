@@ -38,7 +38,6 @@ class QuestionAnsweringTrainer(Trainer):
         eval_dataset = self.eval_dataset if eval_dataset is None else eval_dataset
         eval_dataloader = self.get_eval_dataloader(eval_dataset)
         eval_examples = self.eval_examples if eval_examples is None else eval_examples
-
         # 일시적으로 metric computation를 불가능하게 한 상태이며, 해당 코드에서는 loop 내에서 metric 계산을 수행합니다.
         compute_metrics = self.compute_metrics
         self.compute_metrics = None
