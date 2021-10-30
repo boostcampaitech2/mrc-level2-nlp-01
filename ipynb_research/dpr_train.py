@@ -9,7 +9,7 @@ retriever = DensePassageRetriever(
     query_embedding_model=query_model,
     passage_embedding_model=passage_model,
     max_seq_len_query=64,
-    max_seq_len_passage=256
+    max_seq_len_passage=512
 )
 
 retriever.train(
