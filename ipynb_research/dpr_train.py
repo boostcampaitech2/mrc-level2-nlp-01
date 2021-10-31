@@ -24,5 +24,5 @@ retriever.train(
     evaluate_every=3000,
     embed_title=True,
     num_positives=1,
-    num_hard_negatives=1
+    num_hard_negatives=2
 )
