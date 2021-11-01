@@ -14,10 +14,10 @@ from transformers import AdamW, get_linear_schedule_with_warmup
 class DenseRetrieval_with_Faiss:
     def __init__(
         self,
-        args,
-        dataset,
         tokenizer,
         q_encoder,
+        dataset=None,
+        args=None,
         p_encoder=None,
         num_neg=5,
         is_trained=False,
@@ -37,7 +37,7 @@ class DenseRetrieval_with_Faiss:
             self.q_encoder.cuda()
 
         self.wiki_dataset = load_from_disk(wiki_path)
-        self.search_corpus = [example["text"] for example in self.wiki_dataset]
+        self.search_corpus = self.wiki_dataset.tolist()
 
         if not is_trained:
             self.prepare_in_batch_negative(num_neg=num_neg)
@@ -108,8 +108,8 @@ class DenseRetrieval_with_Faiss:
     def build_faiss(
         self,
         index_file_path="/opt/ml/data/wiki.index",
-        use_gpu=True,
-        del_p_encoder=True,
+        use_gpu=False,
+        del_p_encoder=False,
     ):
         if os.path.isfile(index_file_path):
             self.indexer = faiss.read_index(index_file_path)
@@ -121,14 +121,14 @@ class DenseRetrieval_with_Faiss:
     def __make_faiss_index(
         self,
         index_file_path="/opt/ml/data/wiki.index",
-        use_gpu=True,
-        del_p_encoder=True,
+        use_gpu=False,
+        del_p_encoder=False,
     ):
         eval_batch_size = 8
 
         # Construt dataloader
         valid_p_seqs = self.tokenizer(
-            self.search_corpus,
+            [example['text'] for example in self.search_corpus],
             padding="max_length",
             truncation=True,
             return_tensors="pt",
@@ -306,8 +306,9 @@ class DenseRetrieval_with_Faiss:
                     del p_inputs, q_inputs
 
         print("save model & tokenizer")
-        self.q_encoder.save_pretrained(args.output_dir)
-        self.tokenizer.save_pretrained(args.output_dir)
+        self.p_encoder.save_pretrained(os.path.join(args.output_dir, 'p_encoder'))
+        self.q_encoder.save_pretrained(os.path.join(args.output_dir, 'q_encoder'))
+        self.tokenizer.save_pretrained(os.path.join(args.output_dir, 'tokenizer'))
 
     def get_relevant_doc(self, query, k=1):
         valid_q_seqs = self.tokenizer(
