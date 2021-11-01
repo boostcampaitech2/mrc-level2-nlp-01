@@ -51,7 +51,7 @@ class BM25SparseRetrieval:
     ) -> NoReturn:
         # 논문기준 가장 큰값을 기본값으로 사용 http://www.cs.otago.ac.nz/homepages/andrew/papers/2014-2.pdf
 
-        pickle_name = f"{k1}_{b}_{ep}_{type}_{pickle_name}"
+        pickle_name = f"{k1}_{b}_{ep}_{delta}_{type}_{pickle_name}"
         emd_path = os.path.join(self.data_path, pickle_name)
 
         if os.path.isfile(emd_path):
