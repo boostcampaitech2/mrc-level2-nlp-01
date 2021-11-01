@@ -6,8 +6,8 @@ echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | tee -a /e
 apt update
 apt install elasticsearch
 
-cp -f ./install/elasticsearch.yml /etc/elasticsearch/elasticsearch.yml
-cp -f ./install/stop_words.txt /etc/elasticsearch/stop_words.txt
+cp -f ./install/elasticsearch/elasticsearch.yml /etc/elasticsearch/elasticsearch.yml
+cp -f ./install/elasticsearch/stop_words.txt /etc/elasticsearch/stop_words.txt
 apt install systemd
 service elasticsearch start
 systemctl enable elasticsearch
@@ -16,4 +16,4 @@ systemctl restart elasticsearch
 
 curl -XDELETE localhost:9200/wikipedia_contexts
 pip install elasticsearch
-python ./install/elastic_init.py
+python ./install/elasticsearch/elasticsearch_init.py
