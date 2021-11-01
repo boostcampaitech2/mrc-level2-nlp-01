@@ -9,6 +9,7 @@ from transformers import (
     TrainingArguments,
     DataCollatorWithPadding,
     RobertaForQuestionAnswering,
+    RobertaPreTrainedModel,
     EarlyStoppingCallback,
 )
 from datasets import load_from_disk
@@ -25,7 +26,8 @@ from src.magic_box.preprocess import (
 )
 from src.magic_box.postprocess import post_processing_function_with_args
 from src.magic_box.train_qa import QuestionAnsweringTrainer
-from src.magic_box.utils_qa import EM_F1_compute_metrics, set_seed
+from src.magic_box.utils_qa import EM_F1_compute_metrics, set_seed, DataCollatorForSpanMasking
+from src.model import SpanMaskingModel
 
 
 def train(project_args, model_args, dataset_args, train_args, early_stopping_args):
@@ -40,10 +42,11 @@ def train(project_args, model_args, dataset_args, train_args, early_stopping_arg
 
     config = AutoConfig.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForQuestionAnswering.from_pretrained(model_name, config=config)
+    # model = AutoModelForQuestionAnswering.from_pretrained(model_name, config=config)
+    model = SpanMaskingModel.from_pretrained(model_name)
 
     # 시드 설정
-    set_seed(42)
+    # set_seed(42)
 
     # 데이터 셋 로드
 
@@ -51,7 +54,7 @@ def train(project_args, model_args, dataset_args, train_args, early_stopping_arg
 
     # 토크나이징 진행
 
-    is_roberta = isinstance(model, RobertaForQuestionAnswering)
+    is_roberta = isinstance(model, (RobertaForQuestionAnswering, RobertaPreTrainedModel))
     tokenized_train_datasets = datasets["train"].map(
         prepare_train_features_with_setting(tokenizer, dataset_args, is_roberta),
         batched=True,
@@ -65,9 +68,10 @@ def train(project_args, model_args, dataset_args, train_args, early_stopping_arg
     )
 
     # 데이터 콜레터 진행
-    data_collator = DataCollatorWithPadding(
-        tokenizer, pad_to_multiple_of=8 if train_args.fp16 else None
-    )
+    # data_collator = DataCollatorWithPadding(
+    #     tokenizer, pad_to_multiple_of=8 if train_args.fp16 else None
+    # )
+    data_collator = DataCollatorForSpanMasking(tokenizer, mlm=True, mlm_probability=0.15)
 
     if early_stopping_args.setting:
         train_args.load_best_model_at_end = True
