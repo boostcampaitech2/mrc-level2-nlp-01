@@ -8,7 +8,7 @@ from omegaconf import DictConfig
 from src.train import train
 from src.hp_opt import hp_optimizing
 from src.inference import inference
-from src.elasticsearch import initializeES
+from src.retrieval import make_retrieval_datasets
 
 
 def main(cf_name):
@@ -22,10 +22,8 @@ def main(cf_name):
             train(cfg.project, cfg.model, cfg.data, cfg.train, cfg.early_stopping)
         elif cfg.mode == "hyperparameter_tune":
             hp_optimizing(cfg.project, cfg.model, cfg.data, cfg.hp)
-        elif cfg.mode == "elastic_search":
-            initializeES(cfg.elastic_search)
-        elif cfg.mode == "retrieval_train":
-            print("dense retrieval train 만들기")
+        elif cfg.mode == "retrieval":
+            make_retrieval_datasets(cfg.retrieval)
         elif cfg.mode == "inference":
             inference(cfg.model, cfg.data, cfg.inference)
 
