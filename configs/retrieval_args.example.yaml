@@ -2,4 +2,5 @@ mode: "retrieval"
 project:
   name: "retrieval making"
 retrieval: # arguments.py 참고
+  output_name: "new_test_dataset"
   k: 10
