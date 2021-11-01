@@ -1,5 +1,4 @@
 import os
-import json
 import time
 
 # import faiss
@@ -7,11 +6,11 @@ import pickle
 import numpy as np
 import pandas as pd
 
-from rank_bm25 import BM25Okapi
+from rank_bm25 import BM25Plus, BM25Okapi, BM25L
 from tqdm.auto import tqdm
 from contextlib import contextmanager
-from typing import List, Tuple, NoReturn, Any, Optional, Union
-from datasets import Dataset
+from typing import List, Tuple, NoReturn, Optional, Union
+from datasets import Dataset, load_from_disk
 
 
 @contextmanager
@@ -24,27 +23,26 @@ def timer(name):
 class BM25SparseRetrieval:
     def __init__(
         self,
-        tokenize_fn,
         data_path: Optional[str] = "/opt/ml/data/",
-        context_path: Optional[str] = "wikipedia_documents.json",
+        context_path: Optional[str] = "wiki_preprocessed_droped",
     ) -> NoReturn:
         self.data_path = data_path
-        with open(os.path.join(data_path, context_path), "r", encoding="utf-8") as f:
-            wiki = json.load(f)
+        wiki_datasets = load_from_disk(os.path.join(data_path, context_path))
 
-        self.contexts = list(
-            dict.fromkeys([v["text"] for v in wiki.values()])
-        )  # set 은 매번 순서가 바뀌므로
+        self.contexts = [wiki['text'] for wiki in wiki_datasets]
         print(f"Lengths of unique contexts : {len(self.contexts)}")
         self.ids = list(range(len(self.contexts)))
 
-        self.tokenize_fn = tokenize_fn
         self.bm25 = None
         self.indexer = None  # build_faiss()로 생성합니다.
 
-    def get_sparse_embedding(self, pickle_name="bm25api.bin") -> NoReturn:
+    def tokenizer_fn(self, context) -> List[str]:
+        raise '토크나이저를 설정해 주세요'
 
-        pickle_name = pickle_name
+    def get_sparse_embedding(self, pickle_name="bm25.bin", type='Plus', k1=1.6, b=0.3, ep=0.25, delta=0.7) -> NoReturn:
+        # 논문기준 가장 큰값을 기본값으로 사용 http://www.cs.otago.ac.nz/homepages/andrew/papers/2014-2.pdf
+        
+        pickle_name = f"{k1}_{b}_{ep}_{type}_{pickle_name}"
         emd_path = os.path.join(self.data_path, pickle_name)
 
         if os.path.isfile(emd_path):
@@ -54,7 +52,14 @@ class BM25SparseRetrieval:
         else:
             print("Build passage embedding")
             tokenized_contexts = list(map(self.tokenize_fn, tqdm(self.contexts)))
-            self.bm25 = BM25Okapi(tokenized_contexts)
+            if type == 'Okapi':
+                self.bm25 = BM25Okapi(tokenized_contexts, k1=k1, b=b, epsilon=ep)
+            elif type == 'Plus':
+                self.bm25 = BM25Plus(tokenized_contexts, k1=k1, b=b, delta=delta)
+            elif type == 'L':
+                self.bm25 = BM25L(tokenized_contexts, k1=k1, b=b, delta=delta)
+            else:
+                raise '올바른 type을 입력해주세요. Okapi | Plus | L'
             with open(emd_path, "wb") as file:
                 pickle.dump(self.bm25, file)
             print("Embedding pickle saved.")
