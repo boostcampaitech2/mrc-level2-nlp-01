@@ -141,3 +141,7 @@ cython_debug/
 models
 nohup.out
 outputs
+configs
+ignore_folder
+hptunes
+inference

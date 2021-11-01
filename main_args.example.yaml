@@ -1,0 +1,37 @@
+mode: "model_train" # "model_train", "hyperparameter_tune"
+wandb:
+  name: None
+  project: mrc
+  entity: rnl
+project:
+  name: "Test_Project"
+  base_path: "/opt/ml/code/models"
+model:
+  name_or_path: "monologg/koelectra-small-v3-finetuned-korquad" # Require
+data:
+  dataset_path: "/opt/ml/data/train_dataset" # Require
+  max_seq_length: 512 # 대부분의 pretrained 모델이 이 값을 사용합니다.
+  doc_stride: 128
+  max_answer_length: 96 # 트레인셋에서 제일 긴 답이 83임
+early_stopping:
+  setting: False
+  patience: 5
+train:
+  logging_dir: "logs" # Require
+  output_dir: "results" # Require
+  metric_for_best_model: "exact_match" # "exact_match" or "f1" 중 선택하기
+  per_device_train_batch_size: 64
+  per_device_eval_batch_size: 64
+  learning_rate: 5e-5
+  weight_decay: 0.01
+  num_train_epochs: 20
+  warmup_steps: 500
+  fp16: True # 최신 NVIDIA 그래픽카드 기술 적용
+  dataloader_pin_memory: True # default = True
+  gradient_accumulation_steps: 1 # default = 1
+  seed: 42
+  save_strategy: "epoch"
+  evaluation_strategy: "epoch"
+  save_total_limit: 3
+  load_best_model_at_end: True
+  disable_tqdm: False # tqdm (상태바) 숨기기
