@@ -49,3 +49,6 @@ def make_retrieval_datasets(retrieval_cfg: RetrievalArguments):
     new_dataset_dict.save_to_disk(
         os.path.join(retrieval_cfg.data_path, retrieval_cfg.output_name)
     )
+    print(
+        f"Success! save at {os.path.join(retrieval_cfg.data_path, retrieval_cfg.output_name)}"
+    )
