@@ -12,7 +12,7 @@ class OktRetrieval(BM25SparseRetrieval):
         **kwargs
     ) -> NoReturn:
         super().__init__(data_path=data_path, context_path=context_path)
-        self.tag = Okt
+        self.tag = Okt()
         self.ignore_tag = [
             "Adjective",
             "Determiner",
@@ -32,7 +32,7 @@ class OktRetrieval(BM25SparseRetrieval):
         ]
 
     def tokenizer_fn(self, context) -> List[str]:
-        tag_context = self.tag.pos(context)
+        tag_context = self.tag.pos(context, norm=True, stem=True)
         tokenized_context = []
         for text, tag in tag_context:
             if tag in self.ignore_tag:
