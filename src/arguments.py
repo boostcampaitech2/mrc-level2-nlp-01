@@ -87,3 +87,55 @@ class InferenceArguments:
         default="/opt/ml/code/outputs/sample",
         metadata={"help": "출력장소"},
     )
+
+
+@dataclass
+class RetrievalArguments:
+    output_name: str = field(
+        default="new_test_dataset",
+        metadata={"help": "출력할 데이터셋 이름"},
+    )
+    k: int = field(
+        default=10,
+        metadata={"help": "Top-K 값"},
+    )
+    data_path: str = field(
+        default="/opt/ml/data",
+        metadata={"help": "데이터셋 폴더 위치"},
+    )
+    target_dataset: str = field(
+        default="test_dataset",
+        metadata={"help": "변환할 데이터셋 이름"},
+    )
+    context_path: str = field(
+        default="wiki_preprocessed_droped",
+        metadata={"help": "data_path와 자동으로 Join"},
+    )
+    tokenizer_name: str = field(
+        default="xlm-roberta-large",
+        metadata={"help": "토크나이저로 사용할 모델 이름"},
+    )
+    type: str = field(
+        default="Plus",
+        metadata={"help": "BM25타입 Plus | L | Okapi"},
+    )
+    k1: float = field(
+        default=1.6,
+        metadata={"help": "BM25 k1 값"},
+    )
+    b: float = field(
+        default=0.3,
+        metadata={"help": "BM25 b 값"},
+    )
+    ep: float = field(
+        default=0.25,
+        metadata={"help": "BM25 ep 값, Okapi만 사용"},
+    )
+    delta: float = field(
+        default=0.7,
+        metadata={"help": "BM25 delta 값, L과 Plus가 사용"},
+    )
+    retrieval_class: str = field(
+        default="TokenizerRetrieval",
+        metadata={"help": "retrieval/sparse에 있는 클래스 이름"},
+    )

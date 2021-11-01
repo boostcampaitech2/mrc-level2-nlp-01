@@ -1,19 +1,19 @@
-from typing import Dict, NoReturn, Tuple
-
+import os
 import numpy as np
 
+from typing import Dict, NoReturn, Tuple
 from datasets import (
     load_metric,
     load_from_disk,
     DatasetDict,
 )
-
-from transformers import AutoConfig, AutoModelForQuestionAnswering, AutoTokenizer
-
 from transformers import (
     DataCollatorWithPadding,
     EvalPrediction,
     TrainingArguments,
+    AutoConfig,
+    AutoModelForQuestionAnswering,
+    AutoTokenizer,
 )
 
 from src.magic_box.utils_qa import postprocess_qa_predictions, check_no_error
@@ -22,6 +22,7 @@ from src.arguments import ModelArguments, DataArguments, InferenceArguments
 
 
 def inference(model_args, dataset_args, inf_args):
+    os.environ["WANDB_DISABLED"] = "true"
     # 가능한 arguments 들은 ./arguments.py 나 transformer package 안의 src/transformers/training_args.py 에서 확인 가능합니다.
     # --help flag 를 실행시켜서 확인할 수 도 있습니다.
 
