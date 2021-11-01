@@ -73,10 +73,10 @@ class SpanMaskingModel(RobertaPreTrainedModel):
             end_loss = loss_fct(end_logits, end_positions)
             total_loss = (start_loss + end_loss) / 2
 
-        if labels is not None:
-            lm_head_outputs = self.lm_head(sentence_output) # batch, seq, vocab
-            mlm_loss = self.loss_func(lm_head_outputs.view(-1, lm_head_outputs.size(-1)), labels.view(-1))
-            total_loss += mlm_loss
+            if labels is not None:
+                lm_head_outputs = self.lm_head(sentence_output) # batch, seq, vocab
+                mlm_loss = self.loss_func(lm_head_outputs.view(-1, lm_head_outputs.size(-1)), labels.view(-1))
+                total_loss += mlm_loss
 
         # if not return_dict:
         #     output = (start_logits, end_logits) + outputs[self.pooling_pos :]

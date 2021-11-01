@@ -15,9 +15,13 @@
 """
 Question-Answering task와 관련된 'Trainer'의 subclass 코드 입니다.
 """
+from typing import Optional
 
-from transformers import Trainer, is_datasets_available, is_torch_tpu_available
+import torch
+from torch.utils.data import Dataset, DataLoader
+from transformers import Trainer, is_datasets_available, is_torch_tpu_available, default_data_collator
 from transformers.trainer_utils import PredictionOutput
+from transformers.trainer_pt_utils import IterableDatasetShard
 
 
 if is_datasets_available():
@@ -111,7 +115,8 @@ class QuestionAnsweringTrainer(Trainer):
             test_examples, test_dataset, output.predictions, self.args
         )
         return predictions
-    
+
+
     def compute_loss(self, model, inputs, return_outputs=False):
 
         """
@@ -138,3 +143,51 @@ class QuestionAnsweringTrainer(Trainer):
 
 
         return (loss, outputs) if return_outputs else loss
+
+
+    def get_eval_dataloader(self, eval_dataset: Optional[Dataset] = None) -> DataLoader:
+        """
+        Returns the evaluation :class:`~torch.utils.data.DataLoader`.
+
+        Subclass and override this method if you want to inject some custom behavior.
+
+        Args:
+            eval_dataset (:obj:`torch.utils.data.Dataset`, `optional`):
+                If provided, will override :obj:`self.eval_dataset`. If it is an :obj:`datasets.Dataset`, columns not
+                accepted by the ``model.forward()`` method are automatically removed. It must implement :obj:`__len__`.
+        """
+        if eval_dataset is None and self.eval_dataset is None:
+            raise ValueError("Trainer: evaluation requires an eval_dataset.")
+        eval_dataset = eval_dataset if eval_dataset is not None else self.eval_dataset
+
+        if is_datasets_available() and isinstance(eval_dataset, datasets.Dataset):
+            eval_dataset = self._remove_unused_columns(eval_dataset, description="evaluation")
+
+        if isinstance(eval_dataset, torch.utils.data.IterableDataset):
+            if self.args.world_size > 1:
+                eval_dataset = IterableDatasetShard(
+                    eval_dataset,
+                    batch_size=self.args.eval_batch_size,
+                    drop_last=self.args.dataloader_drop_last,
+                    num_processes=self.args.world_size,
+                    process_index=self.args.process_index,
+                )
+            return DataLoader(
+                eval_dataset,
+                batch_size=self.args.eval_batch_size,
+                collate_fn=default_data_collator,
+                num_workers=self.args.dataloader_num_workers,
+                pin_memory=self.args.dataloader_pin_memory,
+            )
+
+        eval_sampler = self._get_eval_sampler(eval_dataset)
+
+        return DataLoader(
+            eval_dataset,
+            sampler=eval_sampler,
+            batch_size=self.args.eval_batch_size,
+            collate_fn=default_data_collator,
+            drop_last=self.args.dataloader_drop_last,
+            num_workers=self.args.dataloader_num_workers,
+            pin_memory=self.args.dataloader_pin_memory,
+        )
