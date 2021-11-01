@@ -1,0 +1,5 @@
+mode: "retrieval"
+project:
+  name: "retrieval making"
+retrieval: # arguments.py 참고
+  k: 10
