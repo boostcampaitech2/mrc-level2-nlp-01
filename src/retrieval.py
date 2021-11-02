@@ -39,7 +39,7 @@ def make_retrieval_datasets(retrieval_cfg: RetrievalArguments):
                     target_dataset[key]["question"][idx], k=retrieval_cfg.k
                 )
                 for data_key in target_dataset[key].column_names:
-                    datas[data_key].append(target_dataset[key][data_key])
+                    datas[data_key].append(target_dataset[key][data_key][idx])
                 datas["scores"].append(scores)
                 datas["context"].append(" ".join(context))
                 datas["context_list"].append(context)
