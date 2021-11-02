@@ -23,4 +23,4 @@ class ElasticSearchRetrieval:
 
     def get_relevant_doc(self, query: str, k: Optional[int] = 1) -> Tuple[List, List]:
         scores, contexts = self.wiki_datasets.get_nearest_examples("text", query, k=k)
-        return scores, contexts
+        return scores, contexts["text"]
