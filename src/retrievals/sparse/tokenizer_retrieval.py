@@ -14,7 +14,7 @@ class TokenizerRetrieval(BM25SparseRetrieval):
     ) -> NoReturn:
         super().__init__(data_path=data_path, context_path=context_path)
         self.tokenizer_name = tokenizer_name
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, use_fast=True)
 
     def tokenizer_fn(self, context) -> List[str]:
         return self.tokenizer.tokenize(context)
