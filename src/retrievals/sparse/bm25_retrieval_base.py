@@ -52,7 +52,10 @@ class BM25SparseRetrieval:
         # 논문기준 가장 큰값을 기본값으로 사용 http://www.cs.otago.ac.nz/homepages/andrew/papers/2014-2.pdf
 
         pickle_name = f"{k1}_{b}_{ep}_{delta}_{type}_{pickle_name}"
+        pickle_name = pickle_name.replace("/", "-")
         emd_path = os.path.join(self.data_path, pickle_name)
+
+        print(f"emd_path : {emd_path}")
 
         if os.path.isfile(emd_path):
             with open(emd_path, "rb") as file:
