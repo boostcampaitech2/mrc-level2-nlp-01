@@ -84,7 +84,7 @@ sigopt config
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## ElasticSeach 설치
+## ElasticSearch 설치
 ```bash=
 sh install/elasticsearch/install.sh
 ```
