@@ -1,45 +1,70 @@
-<p align="center">
-    <br>
-    <img src="https://i.imgur.com/b48hDWD.png" width="400"/>
-    <br>
-<p>
-<p align="center">
-    <a href="https://circleci.com/gh/huggingface/transformers">
-        <img alt="Build" src="https://img.shields.io/circleci/build/github/huggingface/transformers/master">
-    </a>
-    <a href="https://github.com/huggingface/transformers/blob/master/LICENSE">
-        <img alt="GitHub" src="https://img.shields.io/github/license/huggingface/transformers.svg?color=blue">
-    </a>
-    <a href="https://huggingface.co/transformers/index.html">
-        <img alt="Documentation" src="https://img.shields.io/website/http/huggingface.co/transformers/index.html.svg?down_color=red&down_message=offline&up_message=online">
-    </a>
-    <a href="https://github.com/huggingface/transformers/releases">
-        <img alt="GitHub release" src="https://img.shields.io/github/release/huggingface/transformers.svg">
-    </a>
-    <a href="https://github.com/huggingface/transformers/blob/master/CODE_OF_CONDUCT.md">
-        <img alt="Contributor Covenant" src="https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg">
-    </a>
-    <a href="https://zenodo.org/badge/latestdoi/155220641"><img src="https://zenodo.org/badge/155220641.svg" alt="DOI"></a>
-</p>
+<div align="center">
+  <a href="https://github.com/boostcampaitech2/mrc-level2-nlp-01">
+    <img src="https://i.imgur.com/b48hDWD.png" alt="Logo" width="500">
+  </a>
 
-# 목차
+  <h3 align="center">Open Domain Question Answering</h3>
 
-[TOC]
+  <p align="center">
+    Run & Learn Team - BoostCamp AI Second
+    <br />
+  </p>
+</div>
 
-## 소개
+<details>
+  <summary>목차 보기</summary>
+  <ol>
+        <li>
+            <a href="#프로젝트 소개">프로젝트 소개</a>
+        </li>
+        <li>
+            <a href="#사용 방법">사용 방법</a>
+            <ul>
+                <li><a href="#모듈 설치">모듈 설치</a></li>
+                <li></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#코드 구성">코드 구성</a>
+            <ul>
+                <li><a href="#built-with">Built With</a></li>
+            </ul>
+        </li>
+  </ol>
+</details>
 
-P stage 3 대회를 위한 베이스라인 코드 
+## 프로젝트 소개
+<br>
 
-## 설치 방법
+- 우리는 **궁금한 것들이 생겼을 때**, 아주 당연하게 검색엔진을 활용하여 검색을 합니다. 이런 검색엔진은 최근 MRC (기계독해) 기술을 활용하며 매일 발전하고 있습니다.
+- 본 대회에서는 우리가 당연하게 활용하던 검색엔진, 그것과 유사한 형태의 시스템을 만들어 볼 것입니다.
 
-### 요구 사항
+<br>
+<div align="center">
+    <img src="https://i.imgur.com/XE3H9Bp.png" />
+</div>
+<br>
 
-```
-# 필요한 파이썬 패키지 설치. 
-pip install -r requirements.txt
+- 본 ODQA 대회에서 우리가 만들 모델은 two-stage로 구성되어 있습니다. 
+    - **Retriever** : 질문과 관련된 문서를 찾는 단계
+    - **Reader** : 질문과 문서를 기반으로 답을 찾아내는 단계
 
+<br>
+<div align="center">
+    <img src="https://i.imgur.com/oKwpFOV.png" />
+</div>
+<br>
+
+## 설치 단계
+
+### 모듈 설치
+
+```bash=
 # konlpy 패키지 설치
 sudo apt-get install g++ openjdk-8-jdk python3-dev python3-pip curl
+
+# 필요한 파이썬 패키지 설치. 
+pip install -r requirements.txt
 
 # wandb 설정
 wandb login
@@ -48,17 +73,30 @@ wandb login
 sigopt config
 ```
 
-## 사용방법
+### ElasticSeach 설치
+```bash=
+sh install/elasticsearch/install.sh
+```
 
-### 훈련방법
+## 사용 방법
 
-- configs 폴더 안에 원하는 설정파일을 만든다. (ex. hp_tuning.yaml)
-  - 설정파일안에 필요없는걸 지우시면 알아서 기본값을 넣습니다.
-- python main.py --config-name hp_tuning
+### 코드 구성
 
-### 엘라스틱 서치 사용
-- sh install/elasticsearch/install.sh
-- install/elasticsearch/elasticsearch_load.ipynb처럼 사용하면 된다.
+- configs : 코드 실행시 설정할 argument를 추가합니다.
+- deprecated : 현재 사용되지는 않지만, 추후 사용이 될 코드입니다. (ex. DPR)
+- ensemble : 앙상블 코드가 구현되어 있습니다.
+- install : 필요한 종속성 프로그램을 설치합니다. (elasticsearch)
+- research : 코드 구현전 여러가지 실험이 포함되어 있습니다.
+- src : 프로그램 소스코드가 담겨있습니다.
+- main.py : 코드 실행 파일입니다.
 
-- configs 폴더 안에 원하는 설정파일을 만든다. (ex. elasticsearch.yaml)
-- python main.py --config-name elasticsearch
+### Train
+#### Feature
+- Reader 학습 루트입니다.
+
+#### Usage
+- configs 폴더 안에 train_args.example.yaml 을 참고하여 설정파일을 만듭니다. (ex. bert_train.yaml)
+- python main.py --config-name [파일이름]
+    - 위와 같은 경우 python main.py --config-name bert_train
+
+### 

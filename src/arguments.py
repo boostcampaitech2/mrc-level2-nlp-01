@@ -139,3 +139,7 @@ class RetrievalArguments:
         default="TokenizerRetrieval",
         metadata={"help": "retrieval/sparse에 있는 클래스 이름"},
     )
+    is_join: bool = field(
+        default=True,
+        metadata={"help": "context를 조인할지, 아니면 따로 내보낼지"},
+    )
