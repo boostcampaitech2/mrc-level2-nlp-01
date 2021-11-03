@@ -199,6 +199,7 @@ def postprocess_qa_predictions(
                                 offset_mapping[end_index][1],
                             ),
                             "score": start_logits[start_index] + end_logits[end_index],
+                            "doc_score": example["scores"],
                             "start_logit": start_logits[start_index],
                             "end_logit": end_logits[end_index],
                         }

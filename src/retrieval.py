@@ -58,7 +58,7 @@ def retrieval_question_join_context(
                 )
                 for data_key in target_dataset[key].column_names:
                     datas[data_key].append(target_dataset[key][data_key][idx])
-                datas["scores"].append(scores)
+                datas["scores"].append(sum(scores) / top_k)
                 datas["context"].append(" ".join(context))
                 datas["context_list"].append(context)
             result_dataset_dict[key] = Dataset.from_dict(datas)
@@ -85,7 +85,7 @@ def retrieval_question_one_context(target_dataset, retrieval, top_k) -> DatasetD
                             )
                         else:
                             datas[data_key].append(target_dataset[key][data_key][idx])
-                    datas["scores"].append(scores[ctx_idx])
+                    datas["scores"].append(scores[ctx_idx] / 100)
                     datas["context"].append(ctx)
             result_dataset_dict[key] = Dataset.from_dict(datas)
     return DatasetDict(result_dataset_dict)
