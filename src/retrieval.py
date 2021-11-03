@@ -70,22 +70,22 @@ def retrieval_question_one_context(target_dataset, retrieval, top_k) -> DatasetD
     dataset_key = target_dataset.keys()
     for key in dataset_key:
         if key == "validation":
-            datas = {"scores": [], "context": [], "context_list": []}
+            datas = {"scores": [], "context": []}
             for data_key in target_dataset[key].column_names:
                 datas[data_key] = []
             for idx in tqdm(range(target_dataset[key].num_rows)):
                 scores, context = retrieval.get_relevant_doc(
                     target_dataset[key]["question"][idx], k=top_k
                 )
-                for idx, ctx in enumerate(context):
+                for ctx_idx, ctx in enumerate(context):
                     for data_key in target_dataset[key].column_names:
                         if data_key == "id":
                             datas[data_key].append(
-                                target_dataset[key][data_key][idx] + f"_{idx:03}"
+                                target_dataset[key][data_key][idx] + f"_{ctx_idx:03}"
                             )
                         else:
                             datas[data_key].append(target_dataset[key][data_key][idx])
-                    datas["scores"].append(scores[idx])
+                    datas["scores"].append(scores[ctx_idx])
                     datas["context"].append(ctx)
             result_dataset_dict[key] = Dataset.from_dict(datas)
     return DatasetDict(result_dataset_dict)
