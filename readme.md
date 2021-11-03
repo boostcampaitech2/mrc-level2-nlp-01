@@ -15,21 +15,21 @@
   <summary>목차 보기</summary>
   <ol>
         <li>
-            <a href="#프로젝트%20소개">프로젝트 소개</a>
+            <a href="#프로젝트-소개">프로젝트 소개</a>
         </li>
         <li>
-            <a href="#설치 단계">설치 단계</a>
+            <a href="#설치-단계">설치 단계</a>
             <ul>
-                <li><a href="#모듈 설치">모듈 설치</a></li>
-                <li><a href="#ElasticSearch 설치">ElasticSearch 설치</a></li>
+                <li><a href="#모듈-설치">모듈 설치</a></li>
+                <li><a href="#ElasticSearch-설치">ElasticSearch 설치</a></li>
             </ul>
         </li>
         <li>
-            <a href="#사용 방법">사용 방법</a>
+            <a href="#사용-방법">사용 방법</a>
             <ul>
-                <li><a href="#코드 구성">코드 구성</a></li>
+                <li><a href="#코드-구성">코드 구성</a></li>
                 <li><a href="#Train">Train</a></li>
-                <li><a href="#Hyperparameter Tune">Hyperparameter Tune</a></li>
+                <li><a href="#Hyperparameter-Tune">Hyperparameter Tune</a></li>
                 <li><a href="#Retrieval">Retrieval</a></li>
                 <li><a href="#Inference">Inference</a></li>
             </ul>
