@@ -1,7 +1,6 @@
-from importlib import import_module
 import os
 
-
+from importlib import import_module
 from transformers import (
     AutoTokenizer,
     AutoConfig,
@@ -29,7 +28,11 @@ from src.magic_box.preprocess import (
 )
 from src.magic_box.postprocess import post_processing_function_with_args
 from src.magic_box.train_qa import QuestionAnsweringTrainer
-from src.magic_box.utils_qa import EM_F1_compute_metrics, set_seed
+from src.magic_box.utils_qa import (
+    EM_F1_compute_metrics,
+    set_seed,
+    DataCollatorForSpanMasking,
+)
 
 
 def train(project_args, model_args, dataset_args, train_args, early_stopping_args):
@@ -81,9 +84,14 @@ def train(project_args, model_args, dataset_args, train_args, early_stopping_arg
     )
 
     # 데이터 콜레터 진행
-    data_collator = DataCollatorWithPadding(
-        tokenizer, pad_to_multiple_of=8 if train_args.fp16 else None
-    )
+    if dataset_args.is_span_mask:
+        data_collator = DataCollatorForSpanMasking(
+            tokenizer, mlm=True, mlm_probability=0.15
+        )
+    else:
+        data_collator = DataCollatorWithPadding(
+            tokenizer, pad_to_multiple_of=8 if train_args.fp16 else None
+        )
 
     if early_stopping_args.setting:
         train_args.load_best_model_at_end = True
