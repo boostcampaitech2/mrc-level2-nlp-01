@@ -169,10 +169,3 @@ python main.py --config-name inf_test
 - 모델과 Retrieval로 수행된 데이터셋을 불러와서 inference를 시행합니다.
 - nbest_predictions와 predictions를 출력하며 앙상블에 이용할 수 있습니다.
 
----
-
-- 추가 할 것
-    - 다양한 실험
-    - Ensemble 사용법
-    - 실패한 것들
-    - 그외 기타 등등라머아ㅓㄴ랴ㅓ재ㅑ덜
