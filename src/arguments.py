@@ -21,6 +21,13 @@ class ModelArguments:
             "help": "Path to pretrained model or model identifier from huggingface.co/models"
         },
     )
+    use_custom: bool = field(
+        default=False,
+        metadata={"help": "커스텀 모델을 사용합니다."},
+    )
+    custom_model_name: str = field(
+        default="LstmModel", metadata={"help": "커스텀 모델 클래스 이름"}
+    )
 
 
 @dataclass

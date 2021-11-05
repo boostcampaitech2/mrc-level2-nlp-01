@@ -1,5 +1,5 @@
+from importlib import import_module
 import os
-from datasets.utils.file_utils import T
 
 
 from transformers import (
@@ -40,7 +40,11 @@ def train(project_args, model_args, dataset_args, train_args, early_stopping_arg
 
     config = AutoConfig.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForQuestionAnswering.from_pretrained(model_name, config=config)
+    if model_args.use_custom:
+        custom_model = getattr(import_module("src.model"), model_args.custom_model_name)
+        model = custom_model(model_name, config)
+    else:
+        model = AutoModelForQuestionAnswering.from_pretrained(model_name, config=config)
 
     # 시드 설정
     set_seed(42)
