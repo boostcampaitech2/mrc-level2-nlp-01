@@ -145,3 +145,5 @@ configs
 ignore_folder
 hptunes
 inference
+ensemble/hard_voting_json
+ensemble/soft_voting_json

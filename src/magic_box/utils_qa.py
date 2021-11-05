@@ -21,6 +21,7 @@ import json
 import logging
 import os
 from typing import Optional, Tuple, Any
+from dataclasses import dataclass
 
 import numpy as np
 from tqdm.auto import tqdm
@@ -34,11 +35,56 @@ from transformers import (
     TrainingArguments,
     EvalPrediction,
 )
+from transformers.data.data_collator import DataCollatorForLanguageModeling
 from transformers.trainer_utils import get_last_checkpoint
 from datasets import DatasetDict, load_metric
 
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class DataCollatorForSpanMasking(DataCollatorForLanguageModeling):
+    
+    def torch_mask_tokens(self, inputs: Any, special_tokens_mask: Optional[Any] = None) -> Tuple[Any, Any]:
+        """
+        Prepare masked tokens inputs/labels for masked language modeling: 80% MASK, 10% random, 10% original.
+        """
+        import torch
+        
+        labels = inputs.clone()
+        # We sample a few tokens in each sequence for MLM training (with probability `self.mlm_probability`)
+        if special_tokens_mask is None:
+            special_tokens_mask = [
+                self.tokenizer.get_special_tokens_mask(val, already_has_special_tokens=True) for val in labels.tolist()
+            ]
+            special_tokens_mask = torch.tensor(special_tokens_mask, dtype=torch.bool)
+        else:
+            special_tokens_mask = special_tokens_mask.bool()
+
+        
+        masked_indices = torch.zeros(size=labels.shape)
+
+        mask_token = self.tokenizer.mask_token_id
+        for i in range(len(inputs)):
+            # sep 토큰으로 question과 context가 나뉘어져 있다.
+            sep_idx = np.where(inputs[i].numpy() == self.tokenizer.sep_token_id)
+            # q_ids = > 첫번째 sep 토큰위치
+            q_ids = sep_idx[0][0]
+            mask_idxs = set()
+            while len(mask_idxs) < 1:
+                # 1 ~ q_ids까지가 Question 위치
+                ids = random.randrange(1, q_ids-1)
+                mask_idxs.add(ids)
+
+            for mask_idx in list(mask_idxs):
+                inputs[i][mask_idx: mask_idx+2] = mask_token
+                masked_indices[i][mask_idx: mask_idx+2] = True
+
+        masked_indices = masked_indices.bool()
+        labels[~masked_indices] = -100  # We only compute loss on masked tokens
+
+        return inputs, labels
 
 
 def set_seed(seed: int = 42):
@@ -199,6 +245,9 @@ def postprocess_qa_predictions(
                                 offset_mapping[end_index][1],
                             ),
                             "score": start_logits[start_index] + end_logits[end_index],
+                            "doc_score": example["scores"]
+                            if "score" in example.keys()
+                            else None,
                             "start_logit": start_logits[start_index],
                             "end_logit": end_logits[end_index],
                         }

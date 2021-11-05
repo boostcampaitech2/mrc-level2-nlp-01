@@ -1,7 +1,0 @@
-mode: elastic_search
-project:
-  name: "elastic_search making"
-elastic_search:
-  top_k: 10
-  root: "/opt/ml/data/"
-  data_path: "test_dataset"
