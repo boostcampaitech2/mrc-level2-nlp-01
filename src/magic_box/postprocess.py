@@ -1,6 +1,5 @@
 from transformers import EvalPrediction
 
-
 from src.magic_box.utils_qa import postprocess_qa_predictions
 
 

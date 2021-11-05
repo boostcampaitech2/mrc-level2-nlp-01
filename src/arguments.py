@@ -28,6 +28,7 @@ class ModelArguments:
     custom_model_name: str = field(
         default="LstmModel", metadata={"help": "커스텀 모델 클래스 이름"}
     )
+    is_T5: bool = field(default=False, metadata={"help": "T5 모델을 사용합니다."})
 
 
 @dataclass

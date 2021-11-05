@@ -10,6 +10,8 @@ from transformers import (
     DataCollatorWithPadding,
     RobertaForQuestionAnswering,
     EarlyStoppingCallback,
+    AdamW,
+    get_linear_schedule_with_warmup,
 )
 from datasets import load_from_disk
 
@@ -22,6 +24,8 @@ from src.arguments import (
 from src.magic_box.preprocess import (
     prepare_train_features_with_setting,
     prepare_validation_features_with_setting,
+    prepare_train_features_with_setting_for_T5,
+    prepare_validation_features_with_setting_for_T5,
 )
 from src.magic_box.postprocess import post_processing_function_with_args
 from src.magic_box.train_qa import QuestionAnsweringTrainer
@@ -57,13 +61,21 @@ def train(project_args, model_args, dataset_args, train_args, early_stopping_arg
 
     is_roberta = isinstance(model, RobertaForQuestionAnswering)
     tokenized_train_datasets = datasets["train"].map(
-        prepare_train_features_with_setting(tokenizer, dataset_args, is_roberta),
+        prepare_train_features_with_setting_for_T5(tokenizer, dataset_args, is_roberta)
+        if model_args.is_T5
+        else prepare_train_features_with_setting(tokenizer, dataset_args, is_roberta),
         batched=True,
         remove_columns=datasets["train"].column_names,
     )
 
     tokenized_valid_datasets = datasets["validation"].map(
-        prepare_validation_features_with_setting(tokenizer, dataset_args, is_roberta),
+        prepare_validation_features_with_setting_for_T5(
+            tokenizer, dataset_args, is_roberta
+        )
+        if model_args.is_T5
+        else prepare_validation_features_with_setting(
+            tokenizer, dataset_args, is_roberta
+        ),
         batched=True,
         remove_columns=datasets["validation"].column_names,
     )
@@ -85,6 +97,23 @@ def train(project_args, model_args, dataset_args, train_args, early_stopping_arg
     )
     training_args = set_training_args(train_args, project_args.name)
 
+    # T5 전용 옵티마이저, 스케쥴러 설정
+    if model_args.is_T5:
+        optimizer = AdamW(
+            [
+                {"params": model.encoder.parameters()},
+                {"params": model.qa_outputs.parameters(), "lr": 5e-1},
+            ],
+            lr=train_args.learning_rate,
+        )
+        scheduler = get_linear_schedule_with_warmup(
+            optimizer,
+            num_warmup_steps=train_args.warmup_steps,
+            num_training_steps=len(tokenized_train_datasets)
+            / train_args.per_device_train_batch_size
+            * train_args.num_train_epochs,
+        )
+
     # Trainer 초기화
     trainer = QuestionAnsweringTrainer(
         model=model,
@@ -101,6 +130,7 @@ def train(project_args, model_args, dataset_args, train_args, early_stopping_arg
         callbacks=[EarlyStoppingCallback(early_stopping_args.patience)]
         if early_stopping_args.setting
         else None,
+        optimizers=(optimizer, scheduler) if model_args.is_T5 else (None, None),
     )
 
     # Training
