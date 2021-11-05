@@ -65,6 +65,10 @@ class DataArguments:
             "be faster on GPU but will be slower on TPU)."
         },
     )
+    is_span_mask: bool = field(
+        default=False,
+        metadata={"help": "스팬마스킹 collator을 사용합니다."},
+    )
 
 
 @dataclass
